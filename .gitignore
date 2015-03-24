@@ -52,3 +52,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+*.pyc
+
+# Do not include
+local_settings.py
+production_settings.py
+*.sqlite3
