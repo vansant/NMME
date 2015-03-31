@@ -10,5 +10,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'NMME.views.index', name='index'),
+    url(r'^timeseries/', 'NMME.views.timeseries', name='timeseries'),
+
 
 )
