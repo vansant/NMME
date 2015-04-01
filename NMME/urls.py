@@ -7,10 +7,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'NMME.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'NMME.views.index', name='index'),
-    url(r'^timeseries/', 'NMME.views.timeseries', name='timeseries'),
-
-
+    url(r'^/get-netcdf-data', 'NMME.views.get_netcdf_data', name$
 )
