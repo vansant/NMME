@@ -3,9 +3,9 @@ from django.contrib import admin
 
 import views
 
-from local_settings.py import DEBUG
+from local_settings import DEBUG
 
-if debug == True:
+if DEBUG == True:
     urlpatterns = patterns('',
         # Examples:
         # url(r'^$', 'NMME.views.home', name='home'),
@@ -23,6 +23,6 @@ else:
         # url(r'^blog/', include('blog.urls')),
         #url(r'^admin/', include(admin.site.urls)),
         url(r'^$', 'NMME.views.index', name='index'),
-        url(r'^/get-netcdf-data/', 'NMME.views.get_netcdf_data', name='get_netcd$
+        url(r'^/get-netcdf-data/', 'NMME.views.get_netcdf_data', name='get_netcdf_data'),
 )
 
