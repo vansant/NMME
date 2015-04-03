@@ -1,3 +1,5 @@
+import csv 
+
 from django.http import HttpResponse
 
 import models
@@ -60,11 +62,38 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable parameter")
 
+    
+    # CSV Download
+    if 'download-csv' in request.GET:
+        download_csv = request.GET["download-csv"]
+        if download_csv == "True" or download_csv == "False":
+            pass
+        else:
+            errors.append("You need to specify a download-csv parameter as True or False")
+            
+    else:
+        errors.append("You need to specify a download-csv parameter")
+
+
     # Errors
     if errors:
     	return HttpResponse(errors)
     else:
+        # Get data from NetCDF
         netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
                                       positive_east_longitude=positive_east_longitude,
                                       variable=variable)    
-    return HttpResponse(netcdf_data)
+        # Download CSV Data
+        if download_csv == "True":
+            # Create the HttpResponse object with the appropriate CSV header.
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="data.csv"'
+            writer = csv.writer(response)
+            writer.writerow([i for i in netcdf_data])
+            return response
+        else:
+            # Write CSV to response
+            response_string = ""
+
+            return HttpResponse([(response_string + "%s," % i) for i in netcdf_data])
+            #return HttpResponse(netcdf_data)
