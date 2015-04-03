@@ -6,6 +6,7 @@ def index_from_numpy_array(array, value):
     """ Returns the index of the closest value from from NumPy Array"""
     return (np.abs(array-value)).argmin()
 
+
 def get_netcdf_data(day, lat, lon, positive_east_longitude, variable):
 
     # Path to OpenDap NetCDF 
@@ -25,10 +26,12 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable):
     # ####  
 
     time_num=len(timehandle)
-    timeindex=range(day-1,time_num,365)  #python starts arrays at 0
+    timeindex=range(day-1,time_num)  #python starts arrays at 0
     time=timehandle[timeindex]
     lat_array = lathandle[:]
     lon_array = lonhandle[:]
+    time_array = timehandle[:]
+    print time_num
 
     # Lons from 0-360 converted to -180 to 180
     if positive_east_longitude == "True":
