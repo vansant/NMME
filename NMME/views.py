@@ -1,11 +1,14 @@
 import csv 
 from multiprocessing import Pool
 
+import numpy as np
 from django.http import HttpResponse
 
 import models
 
 
+# This sets the NumPy array threshold to infinity so it does not truncate with ...
+np.set_printoptions(threshold=np.inf)
 
 def index(request):
     return HttpResponse("Hello, world")
@@ -90,40 +93,27 @@ def get_netcdf_data(request):
     	return HttpResponse(errors)
     else:
 
-    
-
-
-
- 
         # Set number of processes
-        p = Pool(5) 
+        p = Pool(len(variable_list)) 
 
-        # Set function parameters as tuples
+        # List to hold  function parameters as tuples
+        # Each set of parameters is for one URL call
         function_parameters = [] 
 
-
-
-        # List of all returned netcdf data
+        # List for all returned netcdf data
         netcdf_data_list = []
 
         # Process each variable from the variable list
         for v in variable_list:
-                    #print "processing %s" % v
-                    #netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
-                    #                  positive_east_longitude=positive_east_longitude,
-                    #                  variable=v)   
-                    #netcdf_data_list.append(netcdf_data)
-                    function_parameters.append((day,lat,lon,positive_east_longitude,
-                                      v))
+            function_parameters.append((day,lat,lon,positive_east_longitude,v))
 
         # Map to pool
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
-        print len(netcdf_data_list), "length of netcdf_data_list"
-        # Get data from NetCDF
-        #netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
-        #                              positive_east_longitude=positive_east_longitude,
-        #                              variable=variable)    
+        print len(netcdf_data_list[0][:]), "length of netcdf_data_list"
+        #for i in netcdf_data_list[0][1]:
+        #    print i
+  
         # Download CSV Data
         if download_csv == "True":
             # Create the HttpResponse object with the appropriate CSV header.
@@ -135,8 +125,8 @@ def get_netcdf_data(request):
         else:
             # Write CSV to response
             response_string = ""
-            all_data = [ i[:] for i in netcdf_data_list]
-            print all_data
+            #all_data = [ i for i in netcdf_data_list[0]]
+            #print all_data
 
             return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
             #return HttpResponse(netcdf_data)
