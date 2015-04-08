@@ -9,6 +9,7 @@ def index_from_numpy_array(array, value):
 
 def get_netcdf_data(day, lat, lon, positive_east_longitude, variable):
 
+    print "porcessing NetCDF"
     # Path to OpenDap NetCDF 
     #pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc'
     pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
@@ -31,7 +32,7 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable):
     lat_array = lathandle[:]
     lon_array = lonhandle[:]
     time_array = timehandle[:]
-    print time_num
+    #print time_num
 
     # Lons from 0-360 converted to -180 to 180
     if positive_east_longitude == "True":

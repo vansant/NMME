@@ -1,11 +1,18 @@
 import csv 
+from multiprocessing import Pool
 
 from django.http import HttpResponse
 
 import models
 
+
+
 def index(request):
     return HttpResponse("Hello, world")
+
+# Pack parameters
+def allow_mulitple_parameters(args):
+    return models.get_netcdf_data(*args)
 
 def get_netcdf_data(request):
     errors = []
@@ -83,16 +90,34 @@ def get_netcdf_data(request):
     	return HttpResponse(errors)
     else:
 
+    
+
+
+
+ 
+        # Set number of processes
+        p = Pool(5) 
+
+        # Set function parameters as tuples
+        function_parameters = [] 
+
+
+
         # List of all returned netcdf data
         netcdf_data_list = []
 
         # Process each variable from the variable list
         for v in variable_list:
-                    print "processing %s" % v
-                    netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
-                                      positive_east_longitude=positive_east_longitude,
-                                      variable=v)   
-                    netcdf_data_list.append(netcdf_data)
+                    #print "processing %s" % v
+                    #netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
+                    #                  positive_east_longitude=positive_east_longitude,
+                    #                  variable=v)   
+                    #netcdf_data_list.append(netcdf_data)
+                    function_parameters.append((day,lat,lon,positive_east_longitude,
+                                      v))
+
+        # Map to pool
+        netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
         print len(netcdf_data_list), "length of netcdf_data_list"
         # Get data from NetCDF
