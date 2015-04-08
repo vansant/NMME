@@ -54,11 +54,14 @@ def get_netcdf_data(request):
 
     # Variable
     if 'variable' in request.GET:
-        variable = request.GET['variable']
-        if str(variable).isdigit():
-            errors.append("variable paramater must be a a variable name not a number")
-        else:
-            variable = str(variable)
+        variable_list = request.GET.getlist('variable')
+        print "got the variables", variable_list
+
+        for variable in variable_list:
+            if str(variable).isdigit():
+                errors.append("variable paramaters must be a a variable name not a number")
+            else:
+                str(variable)
     else:
         errors.append("You need to specify a variable parameter")
 
@@ -79,21 +82,36 @@ def get_netcdf_data(request):
     if errors:
     	return HttpResponse(errors)
     else:
-        # Get data from NetCDF
-        netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
+
+        # List of all returned netcdf data
+        netcdf_data_list = []
+
+        # Process each variable from the variable list
+        for v in variable_list:
+                    print "processing %s" % v
+                    netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
                                       positive_east_longitude=positive_east_longitude,
-                                      variable=variable)    
+                                      variable=v)   
+                    netcdf_data_list.append(netcdf_data)
+
+        print len(netcdf_data_list), "length of netcdf_data_list"
+        # Get data from NetCDF
+        #netcdf_data = models.get_netcdf_data(day=day, lat=lat, lon=lon,
+        #                              positive_east_longitude=positive_east_longitude,
+        #                              variable=variable)    
         # Download CSV Data
         if download_csv == "True":
             # Create the HttpResponse object with the appropriate CSV header.
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="data.csv"'
             writer = csv.writer(response)
-            writer.writerow([i for i in netcdf_data])
+            writer.writerow([i for i in netcdf_data_list])
             return response
         else:
             # Write CSV to response
             response_string = ""
+            all_data = [ i[:] for i in netcdf_data_list]
+            print all_data
 
-            return HttpResponse([(response_string + "%s," % i) for i in netcdf_data])
+            return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
             #return HttpResponse(netcdf_data)
