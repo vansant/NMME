@@ -88,12 +88,19 @@ def get_netcdf_data(request):
         errors.append("You need to specify a download-csv parameter")
 
 
+    start_year=1950
+    start_month=1
+    start_day=1
+    time_metric="days"
+    time_units=1
+
+
     # Errors
     if errors:
     	return HttpResponse(errors)
     else:
 
-        # Set number of processes
+        # Set number of processes to the number of variables being called
         p = Pool(len(variable_list)) 
 
         # List to hold  function parameters as tuples
@@ -103,12 +110,19 @@ def get_netcdf_data(request):
         # List for all returned netcdf data
         netcdf_data_list = []
 
+        # Set as false until request is made later for just the dates
+        request_dates = "False"
+
         # Process each variable from the variable list
         for v in variable_list:
-            function_parameters.append((day,lat,lon,positive_east_longitude,v))
+            function_parameters.append((day,lat,lon,positive_east_longitude,v,request_dates, start_year, start_month, start_day, time_metric,time_units))
 
-        # Map to pool
+        # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
+
+        # After getting all data successfully we call the dates
+        request_dates = "True"
+        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units)
 
         print len(netcdf_data_list[0][:]), "length of netcdf_data_list"
         #for i in netcdf_data_list[0][1]:
