@@ -129,33 +129,39 @@ def get_netcdf_data(request):
         #for i in netcdf_data_list[0][1]:
         #    print i
   
+
+
+        # Write CSV style response
+        response_string = ""
+        response_rows = []
+        variable_columns = []
+
+        for variable_dataset in netcdf_data_list[0]:
+            variable_columns.append(variable_dataset)
+
+        # Create time and variable rows
+        for i in range(len(netcdf_time_list)):
+            new_row = []
+            new_row.append(netcdf_time_list[i])
+            for v in variable_columns:
+                new_row.append(v[i])
+
+                #for x in new_row:
+            response_rows.append(new_row)
+                 #   new_row = []
+
+
         # Download CSV Data
         if download_csv == "True":
             # Create the HttpResponse object with the appropriate CSV header.
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="data.csv"'
             writer = csv.writer(response)
-            writer.writerow([i for i in netcdf_data_list])
+            for row in response_rows:
+                writer.writerow(row)
             return response
         else:
-            # Write CSV style response
-            response_string = ""
-            response_rows = []
-            variable_columns = []
 
-            for variable_dataset in netcdf_data_list[0]:
-                variable_columns.append(variable_dataset)
-
-            # Create time and variable rows
-            for i in range(len(netcdf_time_list)):
-                new_row = []
-                new_row.append(netcdf_time_list[i])
-                for v in variable_columns:
-                    new_row.append(v[i])
-
-                #for x in new_row:
-                response_rows.append(new_row)
-                 #   new_row = []
                 
             #print len(new_row), 'rows this wide'
                 #print netcdf_time_list[i], variable_columns[0][i], variable_columns[1][i]
