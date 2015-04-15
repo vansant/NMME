@@ -57,11 +57,14 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     
     # Return only the dates for the dataset
     if request_dates == "True":
+        print "request dates true"
         # Get the start date in days since another date
         start_date = find_start_date_from_days_since(days_since=int(timehandle[0]), start_year=start_year, start_month=start_month, start_day=start_day)
 
         # Get a List of dates from the start date
         date_list = get_dates_since_start_date(start_date, len(time_array))
+        # Convert datetime.date(1950, 1, 1) to 1950-01-01
+        date_list = [date.isoformat() for date in date_list]
 
         return date_list
 

@@ -153,8 +153,9 @@ def get_netcdf_data(request):
                 for v in variable_columns:
                     new_row.append(v[i])
 
-                for x in new_row:
-                    response_rows.append(new_row)
+                #for x in new_row:
+                response_rows.append(new_row)
+                 #   new_row = []
                 
             #print len(new_row), 'rows this wide'
                 #print netcdf_time_list[i], variable_columns[0][i], variable_columns[1][i]
@@ -179,14 +180,14 @@ def get_netcdf_data(request):
                 r = str(r)
 
                 # Remove square bracket
-                #r = r
                 response_string += r
                 
-                #response_string += "<br //>"
+                response_string += "<br //>"
             #processed_response_string = response_string.replace("[]", "")
             #print processed_response_string
             response_string = response_string.replace('[', '')
             response_string = response_string.replace(']', '')
+            response_string = response_string.replace("'", '')
             print type(response_string)
                
 
