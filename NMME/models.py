@@ -24,13 +24,14 @@ def get_dates_since_start_date(start_date, length_of_time):
     return dates_list
     
 
-def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units):
+def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
 
     print "Processing NetCDF"
     # Path to OpenDap NetCDF 
     #pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc'
-    pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
+    #pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
     # File handles
+    pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
 
     lathandle=filehandle.variables['lat']
@@ -38,7 +39,7 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     timehandle=filehandle.variables['time']
     datahandle=filehandle.variables[variable]
 
-    print filehandle.variables
+    #print filehandle.variables
 
     # #### Need a function here
     # #### The order of variable dimensions are not consistent so time, lat, lon could

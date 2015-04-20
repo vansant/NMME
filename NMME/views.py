@@ -75,6 +75,19 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable parameter")
 
+    # Variable
+    if 'data-path' in request.GET:
+        data_path_list = request.GET.getlist('data-path')
+        print "got the data paths", data_path_list
+
+        for url in data_path_list:
+            if str(url).isdigit():
+                errors.append("url paramaters must be a a url not a number")
+            else:
+                str(url)
+    else:
+        errors.append("You need to specify a url parameter")
+
     
     # CSV Download
     if 'download-csv' in request.GET:
@@ -115,15 +128,20 @@ def get_netcdf_data(request):
 
         # Process each variable from the variable list
         #### for url in url LIST
-        for v in variable_list:
-            function_parameters.append((day,lat,lon,positive_east_longitude,v,request_dates, start_year, start_month, start_day, time_metric,time_units))
 
+        print variable_list
+        for i in range(len(variable_list)):
+            print i
+            function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i]))
+
+        #for v in variable_list:
+            
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
         # After getting all data successfully we call the dates
         request_dates = "True"
-        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units)
+        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0])
 
         print len(netcdf_data_list[0]), "length of netcdf_data_list"
         print len(netcdf_time_list), "lengith of netcdf_time_list"
