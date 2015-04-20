@@ -114,6 +114,7 @@ def get_netcdf_data(request):
         request_dates = "False"
 
         # Process each variable from the variable list
+        #### for url in url LIST
         for v in variable_list:
             function_parameters.append((day,lat,lon,positive_east_longitude,v,request_dates, start_year, start_month, start_day, time_metric,time_units))
 
@@ -150,6 +151,7 @@ def get_netcdf_data(request):
             response_rows.append(new_row)
                  #   new_row = []
 
+        # Metadata
 
         # Download CSV Data
         if download_csv == "True":
