@@ -30,6 +30,7 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     # Path to OpenDap NetCDF 
     #pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc'
     #pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
+    #'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc'
     # File handles
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")

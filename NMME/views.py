@@ -82,11 +82,11 @@ def get_netcdf_data(request):
 
         for url in data_path_list:
             if str(url).isdigit():
-                errors.append("url paramaters must be a a url not a number")
+                errors.append("data-path paramaters must be a a url not a number")
             else:
                 str(url)
     else:
-        errors.append("You need to specify a url parameter")
+        errors.append("You need to specify a data-path parameter")
 
     
     # CSV Download
