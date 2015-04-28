@@ -141,7 +141,7 @@ def get_netcdf_data(request):
 
         # After getting all data successfully we call the dates
         request_dates = "True"
-        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0])
+        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0])
 
         print len(netcdf_data_list[0]), "length of netcdf_data_list"
         print len(netcdf_time_list), "lengith of netcdf_time_list"
