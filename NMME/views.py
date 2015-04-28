@@ -21,8 +21,6 @@ def clean_list_string(input_string):
     i = i.replace(']', '')
     return i
 
-
-
 # Pack parameters
 def allow_mulitple_parameters(args):
     return models.get_netcdf_data(*args)
@@ -190,6 +188,7 @@ def get_netcdf_data(request):
     
         # Converts from U'' to ''
         metadata_column_list = [str(x) for x in metadata_column_list]
+        metadata_list = [str(x) for x in metadata_list]
 
         # Convert metadata colum list to string and clean it up
         metadata_columns_string =  str(metadata_column_list)
@@ -197,9 +196,25 @@ def get_netcdf_data(request):
 
         #metadata_column_list = [str(x) for x in metadata_column_list]
 
+        # URL data was requested with
+        request_path = request.META['HTTP_HOST'] + request.get_full_path()
+
+
+        # String to list
+        metadata_columns_string_split = metadata_columns_string.split(',')
+
+        # Metadata header section
+        metadata_header = ""
+        for i in range(len(metadata_list)):
+            print i
+            metadata_header +=  metadata_columns_string_split[i] + ': ' + str(metadata_list[i])+ "<br />"
+
+
         # Get metadata
-        metadata = """this is the metadata section <br />
-                     YY-mm-dd, %s<br />""" %  metadata_columns_string
+        metadata = """%s <br />
+        Data from: %s<br />
+        ===============================================<br />
+                     YY-mm-dd, %s<br />""" %  (metadata_header, request_path, metadata_columns_string)
 
 
         # Write CSV style response
