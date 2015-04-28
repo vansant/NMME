@@ -24,16 +24,30 @@ def get_dates_since_start_date(start_date, length_of_time):
     return dates_list
     
 
+def get_netcdf_metadata(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
+    pathname = data_path
+    filehandle=Dataset(pathname,'r',format="NETCDF4")
+
+
+    #print filehandle.variables
+    return [filehandle.variables[variable].long_name, filehandle.variables[variable].units]
+
+
+    
 def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
 
     print "Processing NetCDF"
     # Path to OpenDap NetCDF 
     #pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc'
     #pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
-    #'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc'
+    #'http://www.reacchpna.org/reacchspace/obj1/netcdf/MACAV1/agg_macav2metdata_tasmax_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc'
     # File handles
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
+
+
+    #print filehandle.variables
+    #print filehandle.variables[variable].long_name
 
     lathandle=filehandle.variables['lat']
     lonhandle=filehandle.variables['lon']

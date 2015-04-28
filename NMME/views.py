@@ -13,6 +13,16 @@ np.set_printoptions(threshold=np.inf)
 def index(request):
     return HttpResponse("Hello, world")
 
+
+def clean_list_string(input_string):
+    """ Removes [ ] and ' characters from a string"""
+    i = input_string.replace("'", '')
+    i = i.replace('[', '')
+    i = i.replace(']', '')
+    return i
+
+
+
 # Pack parameters
 def allow_mulitple_parameters(args):
     return models.get_netcdf_data(*args)
@@ -75,6 +85,19 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable parameter")
 
+        # Variable
+    if 'variable-name' in request.GET:
+        variable_name_list = request.GET.getlist('variable-name')
+        print "got the variables names list", variable_name_list
+
+        for variable_name in variable_name_list:
+            if str(variable_name).isdigit():
+                errors.append("variable names must be a a variable name string not a number")
+            else:
+                str(variable_name)
+    else:
+        errors.append("You need to specify a variable-name parameter")
+
     # Variable
     if 'data-path' in request.GET:
         data_path_list = request.GET.getlist('data-path')
@@ -126,6 +149,10 @@ def get_netcdf_data(request):
         # Set as false until request is made later for just the dates
         request_dates = "False"
 
+        # List to hold Metadata items
+        metadata_list = []
+        metadata_column_list = []
+
         # Process each variable from the variable list
         #### for url in url LIST
 
@@ -133,9 +160,21 @@ def get_netcdf_data(request):
         for i in range(len(variable_list)):
             print i
             function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i]))
+            
+            # m returns variable long name, variable units
+            m = models.get_netcdf_metadata(day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i])
+
+            # Contains long names of variables
+            metadata_list.append(m[0])
+
+            # Contains user defined variable names and units from metadata
+            metadata_column_list.append(variable_name_list[i] + ' (' + m[1] + ')')
+
+
 
         #for v in variable_list:
-            
+        print metadata_list
+
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
@@ -148,6 +187,19 @@ def get_netcdf_data(request):
         #for i in netcdf_data_list[0][1]:
         #    print i
   
+    
+        # Converts from U'' to ''
+        metadata_column_list = [str(x) for x in metadata_column_list]
+
+        # Convert metadata colum list to string and clean it up
+        metadata_columns_string =  str(metadata_column_list)
+        metadata_columns_string = clean_list_string(metadata_columns_string)
+
+        #metadata_column_list = [str(x) for x in metadata_column_list]
+
+        # Get metadata
+        metadata = """this is the metadata section <br />
+                     YY-mm-dd, %s<br />""" %  metadata_columns_string
 
 
         # Write CSV style response
@@ -169,7 +221,6 @@ def get_netcdf_data(request):
             response_rows.append(new_row)
                  #   new_row = []
 
-        # Metadata
 
         # Download CSV Data
         if download_csv == "True":
@@ -218,4 +269,4 @@ def get_netcdf_data(request):
                
 
             #return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
-            return HttpResponse(response_string)
+            return HttpResponse(metadata+response_string)
