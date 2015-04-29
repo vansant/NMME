@@ -214,7 +214,7 @@ def get_netcdf_data(request):
         print column_format_csv
 
         # Metadata header section
-        metadata_header = """#Description<br />#Variables:<br />""" 
+        metadata_header = """#Variables:<br />""" 
         for i in range(len(metadata_list)):
             print i
             metadata_header +=  "#" + metadata_columns_string_split[i] + ":" + str(metadata_list[i]) + "<br />"
@@ -222,7 +222,7 @@ def get_netcdf_data(request):
         print netcdf_filenames_list
 
         # Add Lat/Lon to Metadata header
-        metadata_header += "#Data Extracted for Point Location: %s Lattitude, %s Longitude <br />" % (lat,lon)
+        metadata_header += "#Data Extracted for Point Location: %s Latitude, %s Longitude <br />#" % (lat,lon)
  
         metadata_variable_string = ""
         for i in netcdf_filenames_list:
@@ -230,9 +230,9 @@ def get_netcdf_data(request):
 
         if download_csv == "False":
             # Get metadata
-            metadata = "%s <br />#Data Source <br />#Original Data File(s):<br />%s#===============================================<br />yyyy-mm-dd,%s<br />" %  (metadata_header, metadata_variable_string, metadata_columns_string)
+            metadata = "%s <br />#Original Data File(s):<br />%s#===============================================<br />yyyy-mm-dd,%s<br />" %  (metadata_header, metadata_variable_string, metadata_columns_string)
         else:
-            metadata = "%s <br />#Data Source <br />#Original Data File(s):<br />%s#===============================================<br />" %  (metadata_header, metadata_variable_string)
+            metadata = "%s <br />#Original Data File(s):<br />%s#===============================================<br />" %  (metadata_header, metadata_variable_string)
 
         metadata_rows = metadata.split("<br />")
         for r in metadata_rows:
