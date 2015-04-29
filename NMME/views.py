@@ -207,14 +207,18 @@ def get_netcdf_data(request):
         metadata_header = ""
         for i in range(len(metadata_list)):
             print i
-            metadata_header +=  metadata_columns_string_split[i] + ': ' + str(metadata_list[i])+ "<br />"
+            metadata_header +=  "#" + metadata_columns_string_split[i] + ': ' + str(metadata_list[i])+ "<br />"
 
+
+        # Add Lat/Lon to Metadata header
+        metadata_header += "#Lattitude: %s <br />" % lat
+        metadata_header += "#Longitude: %s <br />" % lon
 
         # Get metadata
         metadata = """%s <br />
-        Data from: %s<br />
-        ===============================================<br />
-                     YY-mm-dd, %s<br />""" %  (metadata_header, request_path, metadata_columns_string)
+        #Data from: %s<br />
+        #===============================================<br />
+        #yyyy-mm-dd, %s<br />""" %  (metadata_header, request_path, metadata_columns_string)
 
 
         # Write CSV style response
