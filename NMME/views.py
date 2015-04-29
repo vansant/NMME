@@ -189,7 +189,7 @@ def get_netcdf_data(request):
         metadata_list = [str(x) for x in metadata_list]
 
         # Convert metadata colum list to string and clean it up
-        metadata_columns_string =  str(metadata_column_list)
+        metadata_columns_string = str(metadata_column_list)
         metadata_columns_string = clean_list_string(metadata_columns_string)
 
         #metadata_column_list = [str(x) for x in metadata_column_list]
@@ -201,16 +201,23 @@ def get_netcdf_data(request):
         netcdf_filenames_list = [str(x.split('/')[-1]) for x in data_path_list] 
         netcdf_filenames_list = [clean_list_string(x.split('/')[-1]) for x in netcdf_filenames_list] 
 
-
         # String to list
         metadata_columns_string_split = metadata_columns_string.split(',')
+         
+
+        column_format_csv = [['yyyy-mm-dd']]
+
+        for i in metadata_columns_string_split:
+            
+            column_format_csv[0].append(i)
+
+        print column_format_csv
 
         # Metadata header section
-        metadata_header = """#Description <br />
-        #Variables:<br /> """ 
+        metadata_header = """#Description<br />#Variables:<br />""" 
         for i in range(len(metadata_list)):
             print i
-            metadata_header +=  "#" + metadata_columns_string_split[i] + ': ' + str(metadata_list[i])+ "<br />"
+            metadata_header +=  "#" + metadata_columns_string_split[i] + ":" + str(metadata_list[i]) + "<br />"
 
         print netcdf_filenames_list
 
@@ -221,14 +228,15 @@ def get_netcdf_data(request):
         for i in netcdf_filenames_list:
             metadata_variable_string += "#%s <br />" % i
 
-        # Get metadata
-        metadata = """%s <br />
-        #Data Source <br />
-        #Original Data File(s):<br />
-        %s
-        #===============================================<br />
-        #yyyy-mm-dd, %s<br />""" %  (metadata_header, metadata_variable_string, metadata_columns_string)
+        if download_csv == "False":
+            # Get metadata
+            metadata = "%s <br />#Data Source <br />#Original Data File(s):<br />%s#===============================================<br />yyyy-mm-dd,%s<br />" %  (metadata_header, metadata_variable_string, metadata_columns_string)
+        else:
+            metadata = "%s <br />#Data Source <br />#Original Data File(s):<br />%s#===============================================<br />" %  (metadata_header, metadata_variable_string)
 
+        metadata_rows = metadata.split("<br />")
+        for r in metadata_rows:
+            print type(r), r
 
         # Write CSV style response
         response_string = ""
@@ -249,6 +257,14 @@ def get_netcdf_data(request):
             response_rows.append(new_row)
                  #   new_row = []
 
+        response_metadata_rows = []
+        # Create metadata rows
+        for i in range(len(metadata_rows)):
+            new_row = []
+            new_row.append(metadata_rows[i])
+            
+            response_metadata_rows.append(new_row)
+
 
         # Download CSV Data
         if download_csv == "True":
@@ -256,7 +272,24 @@ def get_netcdf_data(request):
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="data.csv"'
             writer = csv.writer(response)
+
+            #writer.writerow("\"asdasd.asdasdasd.,asdasd\"")
+
+            #ccc = [["a hdash; this ;daiso asd9u", "this test"], 'b asd asdw wd', 'c']
+            #for r in ccc:
+            #    print r
+            #    writer.writerow(r)
+            
+            # Get Metadata rows
+            for row in response_metadata_rows:
+                writer.writerow(row)
+            
+            for row in column_format_csv:
+                writer.writerow(row)
+
+            # Get data rows
             for row in response_rows:
+                #print row
                 writer.writerow(row)
             return response
         else:
