@@ -11,7 +11,7 @@ import models
 np.set_printoptions(threshold=np.inf)
 
 def index(request):
-    return HttpResponse("Hello, world")
+    return HttpResponse("Services Page")
 
 
 def clean_list_string(input_string):
@@ -168,8 +168,6 @@ def get_netcdf_data(request):
             # Contains user defined variable names and units from metadata
             metadata_column_list.append(variable_name_list[i] + ' (' + m[1] + ')')
 
-
-
         #for v in variable_list:
         print metadata_list
 
@@ -199,26 +197,37 @@ def get_netcdf_data(request):
         # URL data was requested with
         request_path = request.META['HTTP_HOST'] + request.get_full_path()
 
+        # List containing the clean string names of the NetCDF filenames 
+        netcdf_filenames_list = [str(x.split('/')[-1]) for x in data_path_list] 
+        netcdf_filenames_list = [clean_list_string(x.split('/')[-1]) for x in netcdf_filenames_list] 
+
 
         # String to list
         metadata_columns_string_split = metadata_columns_string.split(',')
 
         # Metadata header section
-        metadata_header = ""
+        metadata_header = """#Description <br />
+        #Variables:<br /> """ 
         for i in range(len(metadata_list)):
             print i
             metadata_header +=  "#" + metadata_columns_string_split[i] + ': ' + str(metadata_list[i])+ "<br />"
 
+        print netcdf_filenames_list
 
         # Add Lat/Lon to Metadata header
-        metadata_header += "#Lattitude: %s <br />" % lat
-        metadata_header += "#Longitude: %s <br />" % lon
+        metadata_header += "#Data Extracted for Point Location: %s Lattitude, %s Longitude <br />" % (lat,lon)
+ 
+        metadata_variable_string = ""
+        for i in netcdf_filenames_list:
+            metadata_variable_string += "#%s <br />" % i
 
         # Get metadata
         metadata = """%s <br />
-        #Data from: %s<br />
+        #Data Source <br />
+        #Original Data File(s):<br />
+        %s
         #===============================================<br />
-        #yyyy-mm-dd, %s<br />""" %  (metadata_header, request_path, metadata_columns_string)
+        #yyyy-mm-dd, %s<br />""" %  (metadata_header, metadata_variable_string, metadata_columns_string)
 
 
         # Write CSV style response
@@ -281,11 +290,11 @@ def get_netcdf_data(request):
                 response_string += "<br //>"
             #processed_response_string = response_string.replace("[]", "")
             #print processed_response_string
-            response_string = response_string.replace('[', '')
-            response_string = response_string.replace(']', '')
-            response_string = response_string.replace("'", '')
-            print type(response_string)
-               
+            #response_string = response_string.replace('[', '')
+            #response_string = response_string.replace(']', '')
+            #response_string = response_string.replace("'", '')
+            #print type(response_string)
+            response_string = clean_list_string(response_string)   
 
             #return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
             return HttpResponse(metadata+response_string)
