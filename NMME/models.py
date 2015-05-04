@@ -49,9 +49,26 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     #print filehandle.variables
     #print filehandle.variables[variable].long_name
 
-    lathandle=filehandle.variables['lat']
-    lonhandle=filehandle.variables['lon']
-    timehandle=filehandle.variables['time']
+
+    
+
+    try:
+        lathandle = filehandle.variables['lat']
+    except:
+        lathandle = filehandle.variables['Latitude']
+
+    try:
+        lonhandle=filehandle.variables['lon']
+    except:
+        lonhandle=filehandle.variables['Longitude']
+
+    
+    try:
+        timehandle=filehandle.variables['time']
+    except:
+        timehandle=filehandle.variables['Time']
+
+    
     datahandle=filehandle.variables[variable]
 
     #print filehandle.variables
