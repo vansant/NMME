@@ -73,7 +73,7 @@ def get_netcdf_data(request):
     # Variable
     if 'variable' in request.GET:
         variable_list = request.GET.getlist('variable')
-        print "got the variables", variable_list
+        #print "got the variables", variable_list
 
         for variable in variable_list:
             if str(variable).isdigit():
@@ -86,7 +86,7 @@ def get_netcdf_data(request):
         # Variable
     if 'variable-name' in request.GET:
         variable_name_list = request.GET.getlist('variable-name')
-        print "got the variables names list", variable_name_list
+        #print "got the variables names list", variable_name_list
 
         for variable_name in variable_name_list:
             if str(variable_name).isdigit():
@@ -99,7 +99,7 @@ def get_netcdf_data(request):
     # Variable
     if 'data-path' in request.GET:
         data_path_list = request.GET.getlist('data-path')
-        print "got the data paths", data_path_list
+        #print "got the data paths", data_path_list
 
         for url in data_path_list:
             if str(url).isdigit():
@@ -154,9 +154,9 @@ def get_netcdf_data(request):
         # Process each variable from the variable list
         #### for url in url LIST
 
-        print variable_list
+        #print variable_list
         for i in range(len(variable_list)):
-            print i
+            #print i
             function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i]))
             
             # m returns variable long name, variable units
@@ -169,7 +169,7 @@ def get_netcdf_data(request):
             metadata_column_list.append(variable_name_list[i] + ' (' + m[1] + ')')
 
         #for v in variable_list:
-        print metadata_list
+        #print metadata_list
 
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
@@ -178,10 +178,10 @@ def get_netcdf_data(request):
         request_dates = "True"
         netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0])
 
-        print len(netcdf_data_list[0]), "length of netcdf_data_list"
-        print len(netcdf_time_list), "lengith of netcdf_time_list"
+        #print len(netcdf_data_list[0]), "length of netcdf_data_list"
+        #print len(netcdf_time_list), "lengith of netcdf_time_list"
         #for i in netcdf_data_list[0][1]:
-        #    print i
+        #    #print i
   
     
         # Converts from U'' to ''
@@ -211,15 +211,15 @@ def get_netcdf_data(request):
             
             column_format_csv[0].append(i)
 
-        print column_format_csv
+        #print column_format_csv
 
         # Metadata header section
         metadata_header = """#Variables:<br />""" 
         for i in range(len(metadata_list)):
-            print i
+            #print i
             metadata_header +=  "#" + metadata_columns_string_split[i] + ":" + str(metadata_list[i]) + "<br />"
 
-        print netcdf_filenames_list
+        #print netcdf_filenames_list
 
         # Add Lat/Lon to Metadata header
         metadata_header += "#Data Extracted for Point Location: %s Latitude, %s Longitude <br />#" % (lat,lon)
@@ -235,8 +235,8 @@ def get_netcdf_data(request):
             metadata = "%s <br />#Original Data File(s):<br />%s#===============================================<br />" %  (metadata_header, metadata_variable_string)
 
         metadata_rows = metadata.split("<br />")
-        for r in metadata_rows:
-            print type(r), r
+        #for r in metadata_rows:
+            #print type(r), r
 
         # Write CSV style response
         response_string = ""
@@ -277,7 +277,7 @@ def get_netcdf_data(request):
 
             #ccc = [["a hdash; this ;daiso asd9u", "this test"], 'b asd asdw wd', 'c']
             #for r in ccc:
-            #    print r
+            #    #print r
             #    writer.writerow(r)
             
             # Get Metadata rows
@@ -307,7 +307,7 @@ def get_netcdf_data(request):
             #        #response_string.append(netcdf_data_list[0][i][j])
             #        #print netcdf_time_list[j], netcdf_data_list[0][i][j]
             #        for row in rows:
-            #            print response_rows
+            #            #print response_rows
                 
                 
             #all_data = [ i for i in netcdf_data_list[0]]

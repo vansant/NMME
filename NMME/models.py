@@ -36,7 +36,7 @@ def get_netcdf_metadata(day, lat, lon, positive_east_longitude, variable, reques
     
 def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
 
-    print "Processing NetCDF"
+    #print "Processing NetCDF"
     # Path to OpenDap NetCDF 
     #pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc'
     #pathname =  'http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily.nc' 
@@ -88,7 +88,7 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     
     # Return only the dates for the dataset
     if request_dates == "True":
-        print "request dates true"
+        #print "request dates true"
         # Get the start date in days since another date
         start_date = find_start_date_from_days_since(days_since=int(timehandle[0]), start_year=start_year, start_month=start_month, start_day=start_day)
 
