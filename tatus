@@ -1,0 +1,29 @@
+diff --git a/NMME/views.py b/NMME/views.py
+index ef34188..5da35d6 100644
+--- a/NMME/views.py
++++ b/NMME/views.py
+@@ -2,7 +2,7 @@ import csv
+ from multiprocessing import Pool
+ 
+ import numpy as np
+-from django.http import HttpResponse
++from django.http import HttpResponse, HttpRequest
+ 
+ import models
+ 
+@@ -28,10 +28,13 @@ def allow_mulitple_parameters(args):
+ def get_netcdf_data(request):
+     errors = []
+ 
++
++    
++
+     # Day
+-    if 'day' in request.GET:
++    if 'day' in request.GET or 'day' in request.POST:
+         try:
+-            day = int(request.GET['day'])
++            day = int(request.POST['day'])
+         except:
+         	errors.append("Day parameter needs to be an integer")
+     else:

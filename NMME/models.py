@@ -14,14 +14,14 @@ def find_start_date_from_days_since(days_since, start_year, start_month, start_d
     start_date = dt.date(start_year, start_month, start_day)
     return start_date + days_since
 
-def get_dates_since_start_date(start_date, length_of_time):
-    """ Gets all dates from a start date to an end date"""
+#def get_dates_since_start_date(start_date, length_of_time):
+#    """ Gets all dates from a start date to an end date"""
     #print start_date
-    dates_list = []
-    for i in range(length_of_time):
-        day_since_start_day = timedelta(days=i)
-        dates_list.append(start_date + day_since_start_day)
-    return dates_list
+#    dates_list = []
+#    for i in range(length_of_time):
+#        day_since_start_day = timedelta(days=i)
+#        dates_list.append(start_date + day_since_start_day)
+#    return dates_list
     
 
 def get_netcdf_metadata(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
@@ -93,7 +93,11 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
         start_date = find_start_date_from_days_since(days_since=int(timehandle[0]), start_year=start_year, start_month=start_month, start_day=start_day)
 
         # Get a List of dates from the start date
-        date_list = get_dates_since_start_date(start_date, len(time_array))
+        date_list = []
+        for time in time_array:
+            t = find_start_date_from_days_since(int(time), 1900, 1, 1)
+            date_list.append(t)
+
         # Convert datetime.date(1950, 1, 1) to 1950-01-01
         date_list = [date.isoformat() for date in date_list]
 
