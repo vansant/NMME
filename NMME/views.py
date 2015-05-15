@@ -109,7 +109,6 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a data-path parameter")
 
-    
     # CSV Download
     if 'download-csv' in request.GET:
         download_csv = request.GET["download-csv"]
@@ -121,13 +120,11 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a download-csv parameter")
 
-
     start_year=1900
     start_month=1
     start_day=1
     time_metric="days"
     time_units=1
-
 
     # Errors
     if errors:
@@ -137,6 +134,8 @@ def get_netcdf_data(request):
         # Set number of processes to the number of variables being called
         p = Pool(len(variable_list)) 
 
+        # Set request lat lon variable
+        request_lat_lon = False
         # List to hold  function parameters as tuples
         # Each set of parameters is for one URL call
         function_parameters = [] 
@@ -157,7 +156,7 @@ def get_netcdf_data(request):
         #print variable_list
         for i in range(len(variable_list)):
             #print i
-            function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i]))
+            function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon))
             
             # m returns variable long name, variable units
             m = models.get_netcdf_metadata(day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i])
@@ -168,21 +167,17 @@ def get_netcdf_data(request):
             # Contains user defined variable names and units from metadata
             metadata_column_list.append(variable_name_list[i] + ' (' + m[1] + ')')
 
-        #for v in variable_list:
-        #print metadata_list
-
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
         # After getting all data successfully we call the dates
         request_dates = "True"
-        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0])
+        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False)
 
-        #print len(netcdf_data_list[0]), "length of netcdf_data_list"
-        #print len(netcdf_time_list), "lengith of netcdf_time_list"
-        #for i in netcdf_data_list[0][1]:
-        #    #print i
-  
+        #  After getting all data successfully set request dates false and request_lat_lon true
+        request_dates = "False"
+        request_lat_lon = "True"
+        actual_lat_lon = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon)
     
         # Converts from U'' to ''
         metadata_column_list = [str(x) for x in metadata_column_list]
@@ -222,7 +217,7 @@ def get_netcdf_data(request):
         #print netcdf_filenames_list
 
         # Add Lat/Lon to Metadata header
-        metadata_header += "#Data Extracted for Point Location: %s Latitude, %s Longitude <br />#" % (lat,lon)
+        metadata_header += "#Data Extracted for Point Location: %s Latitude, %s Longitude (closest value to Latitude:%s, Longitude:%s)" % (actual_lat_lon[0], actual_lat_lon[1], lat,lon )
  
         metadata_variable_string = ""
         for i in netcdf_filenames_list:
@@ -272,13 +267,6 @@ def get_netcdf_data(request):
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="data.csv"'
             writer = csv.writer(response)
-
-            #writer.writerow("\"asdasd.asdasdasd.,asdasd\"")
-
-            #ccc = [["a hdash; this ;daiso asd9u", "this test"], 'b asd asdw wd', 'c']
-            #for r in ccc:
-            #    #print r
-            #    writer.writerow(r)
             
             # Get Metadata rows
             for row in response_metadata_rows:
@@ -294,24 +282,6 @@ def get_netcdf_data(request):
             return response
         else:
 
-                
-            #print len(new_row), 'rows this wide'
-                #print netcdf_time_list[i], variable_columns[0][i], variable_columns[1][i]
-            
-            #print len(variable_columns)
-                #print variable_dataset[:]
-            # Build the response string
-            #for i in range(len(netcdf_data_list[0])):
-            #    for j in range(len(netcdf_time_list)):
-            #        response_rows.append(netcdf_time_list[j], netcdf_data_list[0][i][j] )
-            #        #response_string.append(netcdf_data_list[0][i][j])
-            #        #print netcdf_time_list[j], netcdf_data_list[0][i][j]
-            #        for row in rows:
-            #            #print response_rows
-                
-                
-            #all_data = [ i for i in netcdf_data_list[0]]
-            #print all_data
             # convert rows to string
             for r in response_rows:
                 # Convert list to string
@@ -321,12 +291,7 @@ def get_netcdf_data(request):
                 response_string += r
                 
                 response_string += "<br //>"
-            #processed_response_string = response_string.replace("[]", "")
-            #print processed_response_string
-            #response_string = response_string.replace('[', '')
-            #response_string = response_string.replace(']', '')
-            #response_string = response_string.replace("'", '')
-            #print type(response_string)
+
             response_string = clean_list_string(response_string)   
 
             #return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
