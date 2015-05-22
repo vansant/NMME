@@ -44,22 +44,19 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
 
     datahandle=filehandle.variables[variable]
 
-    #print filehandle.variables
-
-    # #### Need a function here
-    # #### The order of variable dimensions are not consistent so time, lat, lon could
-    # #### be lon, time, lat
-    # ####  
 
     time_num=len(timehandle)
     timeindex=range(day-1,time_num)  #python starts arrays at 0
     time=timehandle[timeindex]
+    #print time
     lat_array = lathandle[:]
     lon_array = lonhandle[:]
     time_array = timehandle[:]
 
     # Return only the dates for the dataset
     if request_dates == "True":
+
+        print "Trying to request dates"
 
         # Get the start date in days since another date
         start_date = find_start_date_from_days_since(days_since=int(timehandle[0]), start_year=start_year, start_month=start_month, start_day=start_day)
@@ -83,10 +80,27 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     closestLat = index_from_numpy_array (np.array(lat_array), lat)
     closestLon = index_from_numpy_array (np.array(lon_array), lon)
 
+    print "made it here 2"
+
     if request_lat_lon == "True":
+        "print requesting real lat/lon"
         return [lat_array[closestLat], lon_array[closestLon]]
 
-    # The data
-    data = datahandle[timeindex, closestLat, closestLon]
+    variable_dimensions = datahandle.dimensions
 
+    # Hard coded to look for correct variable dimensions - not the best solution but a quick fix for now will refactor later
+    if variable_dimensions[0] == "lat" or variable_dimensions[0] == "Latitude" and variable_dimensions[1] == "lon" or variable_dimensions[1] == "Longitude" and variable_dimensions[2] == "time" or variable_dimensions[2] == "Time":
+        data = datahandle[closestLat, closestLon, timeindex]
+    elif variable_dimensions[0] == "lat" or variable_dimensions[0] == "Latitude" and variable_dimensions[1] == "time" or variable_dimensions[1] == "Time" and variable_dimensions[2] == "lon" or variable_dimensions[2] == "Longitude":
+        data = datahandle[closestLat, timeindex, closestLon]
+    elif variable_dimensions[0] == "lon" or variable_dimensions[0] == "Longitude" and variable_dimensions[1] == "lat" or variable_dimensions[1] == "Latitude" and variable_dimensions[2] == "time" or variable_dimensions[2] == "Time":
+        data = datahandle[closestLon, closestLat, timeindex]
+    elif variable_dimensions[0] == "lon" or variable_dimensions[0] == "Longitude" and variable_dimensions[1] == "time" or variable_dimensions[1] == "Time" and variable_dimensions[2] == "lat" or variable_dimensions[2] == "Latitude":
+        data = datahandle[closestLon, timeindex, closestLat]  
+    elif variable_dimensions[0] == "time" or variable_dimensions[0] == "Time" and variable_dimensions[1] == "lon" or variable_dimensions[1] == "Longitude" and variable_dimensions[2] == "lat" or variable_dimensions[2] == "Latitude":
+        data = datahandle[timeindex, closestLon, closestLat]
+    elif variable_dimensions[0] == "time" or variable_dimensions[0] == "Time" and variable_dimensions[1] == "lat" or variable_dimensions[1] == "Latitude" and variable_dimensions[2] == "lon" or variable_dimensions[2] == "Longitude":
+        data = datahandle[timeindex, closestLat, closestLon]  
+
+    #data = datahandle[closestLon, closestLat, timeindex ]
     return data
