@@ -43,9 +43,11 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
         timehandle=filehandle.variables['Time']
 
     datahandle=filehandle.variables[variable]
+    #print datahandle.dimensions
 
 
     time_num=len(timehandle)
+    
     timeindex=range(day-1,time_num)  #python starts arrays at 0
     time=timehandle[timeindex]
     #print time
@@ -53,10 +55,12 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     lon_array = lonhandle[:]
     time_array = timehandle[:]
 
+    #print lon_array
+
     # Return only the dates for the dataset
     if request_dates == "True":
 
-        print "Trying to request dates"
+        #print "Trying to request dates"
 
         # Get the start date in days since another date
         start_date = find_start_date_from_days_since(days_since=int(timehandle[0]), start_year=start_year, start_month=start_month, start_day=start_day)
@@ -80,27 +84,29 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
     closestLat = index_from_numpy_array (np.array(lat_array), lat)
     closestLon = index_from_numpy_array (np.array(lon_array), lon)
 
-    print "made it here 2"
-
     if request_lat_lon == "True":
-        "print requesting real lat/lon"
         return [lat_array[closestLat], lon_array[closestLon]]
 
+    # Dimensions
     variable_dimensions = datahandle.dimensions
 
-    # Hard coded to look for correct variable dimensions - not the best solution but a quick fix for now will refactor later
-    if variable_dimensions[0] == "lat" or variable_dimensions[0] == "Latitude" and variable_dimensions[1] == "lon" or variable_dimensions[1] == "Longitude" and variable_dimensions[2] == "time" or variable_dimensions[2] == "Time":
-        data = datahandle[closestLat, closestLon, timeindex]
-    elif variable_dimensions[0] == "lat" or variable_dimensions[0] == "Latitude" and variable_dimensions[1] == "time" or variable_dimensions[1] == "Time" and variable_dimensions[2] == "lon" or variable_dimensions[2] == "Longitude":
-        data = datahandle[closestLat, timeindex, closestLon]
-    elif variable_dimensions[0] == "lon" or variable_dimensions[0] == "Longitude" and variable_dimensions[1] == "lat" or variable_dimensions[1] == "Latitude" and variable_dimensions[2] == "time" or variable_dimensions[2] == "Time":
-        data = datahandle[closestLon, closestLat, timeindex]
-    elif variable_dimensions[0] == "lon" or variable_dimensions[0] == "Longitude" and variable_dimensions[1] == "time" or variable_dimensions[1] == "Time" and variable_dimensions[2] == "lat" or variable_dimensions[2] == "Latitude":
-        data = datahandle[closestLon, timeindex, closestLat]  
-    elif variable_dimensions[0] == "time" or variable_dimensions[0] == "Time" and variable_dimensions[1] == "lon" or variable_dimensions[1] == "Longitude" and variable_dimensions[2] == "lat" or variable_dimensions[2] == "Latitude":
-        data = datahandle[timeindex, closestLon, closestLat]
-    elif variable_dimensions[0] == "time" or variable_dimensions[0] == "Time" and variable_dimensions[1] == "lat" or variable_dimensions[1] == "Latitude" and variable_dimensions[2] == "lon" or variable_dimensions[2] == "Longitude":
-        data = datahandle[timeindex, closestLat, closestLon]  
+    # Dictionary to map dimension with index value
+    variable_index_dictionary = {}
 
-    #data = datahandle[closestLon, closestLat, timeindex ]
+    for var in variable_dimensions:
+        if var == "time" or var == "Time":
+            variable_index_dictionary[var] = timeindex
+        if var == "lat" or var == "Latitude":
+            variable_index_dictionary[var] = closestLat
+        if var == "lon" or var == "Longitude":
+            variable_index_dictionary[var] = closestLon
+
+    # Dictionary to map the order of the dimensions
+    variable_dimensions_dictionary = {}
+    variable_dimensions_dictionary[0] = datahandle.dimensions[0]
+    variable_dimensions_dictionary[1] = datahandle.dimensions[1]
+    variable_dimensions_dictionary[2] = datahandle.dimensions[2]
+
+    data = datahandle[variable_index_dictionary[variable_dimensions_dictionary[0]], variable_index_dictionary[variable_dimensions_dictionary[1]], variable_index_dictionary[variable_dimensions_dictionary[2]]]
     return data
+
