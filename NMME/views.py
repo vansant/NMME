@@ -217,7 +217,7 @@ def get_netcdf_data(request):
         #print netcdf_filenames_list
 
         # Add Lat/Lon to Metadata header
-        metadata_header += "#Data Extracted for Point Location: %s Latitude, %s Longitude (closest value to Latitude:%s, Longitude:%s)" % (actual_lat_lon[0], actual_lat_lon[1], lat,lon )
+        metadata_header += "#Data Extracted for Point Location: %.4f Latitude, %.4f Longitude (closest value to Latitude:%s, Longitude:%s)" % (actual_lat_lon[0], actual_lat_lon[1], lat,lon )
  
         metadata_variable_string = ""
         for i in netcdf_filenames_list:
@@ -239,6 +239,8 @@ def get_netcdf_data(request):
         variable_columns = []
 
         for variable_dataset in netcdf_data_list[0]:
+            # Convert to float and truncate to 6 decimal places
+            variable_dataset = ['%.6f' % float(i) for i in variable_dataset]
             variable_columns.append(variable_dataset)
 
         # Create time and variable rows
