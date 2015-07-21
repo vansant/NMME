@@ -14,10 +14,8 @@ np.set_printoptions(threshold=np.inf)
 def index(request):
     return HttpResponse("Services Page")
 
-
 def testJSON(request):
     html = """
-
         <!doctype html>
         <html>
         <head>
@@ -42,7 +40,6 @@ def testJSON(request):
                   .fail(function() {
                     alert( "error" );
                   })
-
             });
             </script>
         </body>
@@ -119,7 +116,7 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable parameter")
 
-        # Variable
+    # Variable
     if 'variable-name' in request.GET:
         variable_name_list = request.GET.getlist('variable-name')
         #print "got the variables names list", variable_name_list
@@ -132,7 +129,7 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable-name parameter")
 
-    # Variable
+    # Data Path
     if 'data-path' in request.GET:
         data_path_list = request.GET.getlist('data-path')
         #print "got the data paths", data_path_list
@@ -155,6 +152,21 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a request_JSON parameter as True or False")
         
+    # Decimal Precision
+    if 'decimal_precision' in request.GET:
+        decimal_precision = request.GET['decimal_precision']
+        try:
+            decimal_precision = int(decimal_precision)
+            if decimal_precision >= 0 and decimal_precision <= 10:
+                # Precision string used to set the number of decimals places after the decimal dynamically
+                precision_string = "{0:.%sf}" % decimal_precision
+                pass
+            else:
+                errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
+        except:
+            errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
+    else:
+        errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
 
     # CSV Download
     if 'download-csv' in request.GET:
@@ -162,8 +174,7 @@ def get_netcdf_data(request):
         if download_csv == "True" or download_csv == "False":
             pass
         else:
-            errors.append("You need to specify a download-csv parameter as True or False")
-            
+            errors.append("You need to specify a download-csv parameter as True or False")      
     else:
         errors.append("You need to specify a download-csv parameter")
 
@@ -287,8 +298,8 @@ def get_netcdf_data(request):
         variable_columns = []
 
         for variable_dataset in netcdf_data_list[0]:
-            # Convert to float and truncate to 6 decimal places
-            variable_dataset = ['%.6f' % float(i) for i in variable_dataset]
+            # Convert to float and truncate to decimal precision variable
+            variable_dataset = [precision_string.format(i) for i in variable_dataset]
             variable_columns.append(variable_dataset)
         
         # Create time and variable rows
