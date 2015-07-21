@@ -31,7 +31,7 @@ def testJSON(request):
                 var jqxhr = $.ajax({
                     url: "http://127.0.0.1:8000/get-netcdf-data/",
                     method: "GET",
-                    data: "day=1&lat=44&lon=-116&positive-east-longitude=True&data-path=http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc&variable=specific_humidity&download-csv=False&variable-name=asd&request_JSON=True",
+                    data: "day=1&download-csv=False&lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&request_JSON=True&decimal_precision=0",
                 })
                   .done(function(data) {
                     console.log(data);
