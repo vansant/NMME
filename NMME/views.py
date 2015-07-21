@@ -1,3 +1,4 @@
+import json
 import csv 
 from multiprocessing import Pool
 
@@ -13,6 +14,41 @@ np.set_printoptions(threshold=np.inf)
 def index(request):
     return HttpResponse("Services Page")
 
+
+def testJSON(request):
+    html = """
+
+        <!doctype html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>NetCDF AJAX Demo</title>
+        </head>
+        <body>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+            <script>
+         
+            $( document ).ready(function() {
+             
+                var jqxhr = $.ajax({
+                    url: "http://127.0.0.1:8000/get-netcdf-data/",
+                    method: "GET",
+                    data: "day=1&lat=44&lon=-116&positive-east-longitude=True&data-path=http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc&variable=specific_humidity&download-csv=False&variable-name=asd&request_JSON=True",
+                })
+                  .done(function(data) {
+                    console.log(data);
+                    alert( "success" );
+                  })
+                  .fail(function() {
+                    alert( "error" );
+                  })
+
+            });
+            </script>
+        </body>
+        </html>
+    """
+    return HttpResponse(html)
 
 def clean_list_string(input_string):
     """ Removes [ ] and ' characters from a string"""
@@ -108,6 +144,17 @@ def get_netcdf_data(request):
                 str(url)
     else:
         errors.append("You need to specify a data-path parameter")
+
+    # Request JSON parameter
+    if 'request_JSON' in request.GET:
+        request_JSON = request.GET['request_JSON']
+        if request_JSON == "True" or request_JSON == "False":
+            pass
+        else:
+            errors.append("You need to specify a request_JSON parameter as True or False")
+    else:
+        errors.append("You need to specify a request_JSON parameter as True or False")
+        
 
     # CSV Download
     if 'download-csv' in request.GET:
@@ -233,6 +280,7 @@ def get_netcdf_data(request):
         #for r in metadata_rows:
             #print type(r), r
 
+        print metadata_rows
         # Write CSV style response
         response_string = ""
         response_rows = []
@@ -242,7 +290,7 @@ def get_netcdf_data(request):
             # Convert to float and truncate to 6 decimal places
             variable_dataset = ['%.6f' % float(i) for i in variable_dataset]
             variable_columns.append(variable_dataset)
-
+        
         # Create time and variable rows
         for i in range(len(netcdf_time_list)):
             new_row = []
@@ -261,6 +309,34 @@ def get_netcdf_data(request):
             new_row.append(metadata_rows[i])
             
             response_metadata_rows.append(new_row)
+
+
+        def rows_to_JSON(column_names, row_data):
+            """ Process rows into dictionary objects (columns) to convert to JSON"""
+
+            #Dictionary of JSON rows
+            JSON_dictionary = {"metadata": metadata_rows
+            }
+
+            # Loop through each column and set the colunm name for JSON and assign data
+            for i in range(len(column_names)):
+                column_data = [row[i] for row in response_rows]
+                JSON_dictionary[column_names[i].split(" ")[0]] = column_data
+                object_for_JSON = {"data":
+                        [
+                            JSON_dictionary,
+                        ]
+                    }
+            return object_for_JSON
+
+        # Get JSON Data
+        if request_JSON == "True":
+            # Convert the data to dictionary to get converted into JSON
+            object_for_JSON = rows_to_JSON(column_format_csv[0], response_rows)
+            #print JSON_dictionary
+            response = json.dumps(object_for_JSON)
+            return HttpResponse(response, content_type="application/json")
+
 
 
         # Download CSV Data

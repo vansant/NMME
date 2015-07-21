@@ -9,6 +9,7 @@ urlpatterns = patterns('',
         # url(r'^blog/', include('blog.urls')),
         #url(r'^admin/', include(admin.site.urls)),
         url(r'^$', 'NMME.views.index', name='index'),
+        url(r'^testJSON/$', 'NMME.views.testJSON', name='testJSON'),
         url(r'^get-netcdf-data/', 'NMME.views.get_netcdf_data', name='get_netcdf_data'),
 )
 
