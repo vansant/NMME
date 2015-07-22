@@ -100,8 +100,8 @@ def get_netcdf_data(request):
 
     # Request JSON parameter
     request_JSON = "False"
-    if 'request_JSON' in request.GET:
-        request_JSON = request.GET['request_JSON']
+    if 'request-JSON' in request.GET:
+        request_JSON = request.GET['request-JSON']
         if request_JSON == "True" or request_JSON == "False":
             pass
         else:
@@ -110,8 +110,8 @@ def get_netcdf_data(request):
 
     # Decimal Precision
     decimal_precision = 6
-    if 'decimal_precision' in request.GET:
-        decimal_precision = request.GET['decimal_precision']
+    if 'decimal-precision' in request.GET:
+        decimal_precision = request.GET['decimal-precision']
         try:
             decimal_precision = int(decimal_precision)
             if decimal_precision >= 0 and decimal_precision <= 10:

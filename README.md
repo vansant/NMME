@@ -37,11 +37,11 @@ download-csv
   True or False
   Returns the data formated a .csv file
   Default = False
-decimal_precision
+decimal-precision
   Integer Number  0 - 10
   Sets the number of digitals after the decimal
   Default = 6
-request_JSON
+request-JSON
   True of False
   Returns the data as a JSON object
   Default = False
