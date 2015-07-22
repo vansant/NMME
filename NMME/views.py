@@ -14,39 +14,6 @@ np.set_printoptions(threshold=np.inf)
 def index(request):
     return HttpResponse("Services Page")
 
-def testJSON(request):
-    html = """
-        <!doctype html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>NetCDF AJAX Demo</title>
-        </head>
-        <body>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-            <script>
-         
-            $( document ).ready(function() {
-             
-                var jqxhr = $.ajax({
-                    url: "http://127.0.0.1:8000/get-netcdf-data/",
-                    method: "GET",
-                    data: "&download-csv=False&lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&request_JSON=True&decimal_precision=0",
-                })
-                  .done(function(data) {
-                    console.log(data);
-                    alert( "success" );
-                  })
-                  .fail(function() {
-                    alert( "error" );
-                  })
-            });
-            </script>
-        </body>
-        </html>
-    """
-    return HttpResponse(html)
-
 def clean_list_string(input_string):
     """ Removes [ ] and ' characters from a string"""
     i = input_string.replace("'", '')
@@ -67,7 +34,6 @@ def get_netcdf_data(request):
             lat = float(request.GET['lat'])
             if lat < -90 or lat > 90:
                 errors.append("Lat parameter needs to within -90 to 90 range")
-
         except:
             errors.append("Lat parameter needs to be a float")
     else:
@@ -84,6 +50,7 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a lon parameter")
 
+    positive_east_longitude = "True"
     # Positive east longitude
     if 'positive-east-longitude' in request.GET:
         positive_east_longitude = request.GET['positive-east-longitude']
@@ -91,9 +58,7 @@ def get_netcdf_data(request):
             pass
         else:
             errors.append("positive-east-longitude paramater should be either True or False")
-    else:
-        errors.append("You need to specify a positive-east-longitude parameter")
-
+    
     # Variable
     if 'variable' in request.GET:
         variable_list = request.GET.getlist('variable')
@@ -107,7 +72,7 @@ def get_netcdf_data(request):
     else:
         errors.append("You need to specify a variable parameter")
 
-    # Variable
+    # Variable Name
     if 'variable-name' in request.GET:
         variable_name_list = request.GET.getlist('variable-name')
         #print "got the variables names list", variable_name_list
@@ -134,40 +99,39 @@ def get_netcdf_data(request):
         errors.append("You need to specify a data-path parameter")
 
     # Request JSON parameter
+    request_JSON = "False"
     if 'request_JSON' in request.GET:
         request_JSON = request.GET['request_JSON']
         if request_JSON == "True" or request_JSON == "False":
             pass
         else:
             errors.append("You need to specify a request_JSON parameter as True or False")
-    else:
-        errors.append("You need to specify a request_JSON parameter as True or False")
-        
+      
+
     # Decimal Precision
+    decimal_precision = 6
     if 'decimal_precision' in request.GET:
         decimal_precision = request.GET['decimal_precision']
         try:
             decimal_precision = int(decimal_precision)
             if decimal_precision >= 0 and decimal_precision <= 10:
-                # Precision string used to set the number of decimals places after the decimal dynamically
-                precision_string = "{0:.%sf}" % decimal_precision
+
                 pass
             else:
                 errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
         except:
             errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
-    else:
-        errors.append("You need to specify a decimal_precision parameter as an integer between 0-10")
+    # Precision string used to set the number of decimals places after the decimal dynamically
+    precision_string = "{0:.%sf}" % decimal_precision   
 
     # CSV Download
+    download_csv = "False"
     if 'download-csv' in request.GET:
         download_csv = request.GET["download-csv"]
         if download_csv == "True" or download_csv == "False":
             pass
         else:
             errors.append("You need to specify a download-csv parameter as True or False")      
-    else:
-        errors.append("You need to specify a download-csv parameter")
 
     start_year=1900
     start_month=1
