@@ -273,9 +273,7 @@ def get_netcdf_data(request):
         for i in range(len(metadata_rows)):
             new_row = []
             new_row.append(metadata_rows[i])
-            
             response_metadata_rows.append(new_row)
-
 
         def rows_to_JSON(column_names, row_data):
             """ Process rows into dictionary objects (columns) to convert to JSON"""
@@ -302,8 +300,6 @@ def get_netcdf_data(request):
             #print JSON_dictionary
             response = json.dumps(object_for_JSON)
             return HttpResponse(response, content_type="application/json")
-
-
 
         # Download CSV Data
         if download_csv == "True":
@@ -340,3 +336,105 @@ def get_netcdf_data(request):
 
             #return HttpResponse([(response_string + "%s," % i) for i in netcdf_data_list])
             return HttpResponse(metadata+response_string)
+
+def chart_netcdf_data(request):
+    response = """
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title> NetCDF highcharts demo</title>
+  <script type='text/javascript' src='//code.jquery.com/jquery-1.9.1.js'></script>
+  <script type='text/javascript'>
+    $(function() {
+
+        var jqxhr = $.ajax({
+                url: "/get-netcdf-data",
+                method: "GET",
+                data: "lat=44&lon=-116&data-path=http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc&variable=specific_humidity&variable-name=myVar&request-JSON=True",
+            })
+            .done(function(response) {
+                console.log(data);
+                //alert( data.metadata );
+
+                // Assign data from JSON notice the different formats??
+                var myVar = response.data[0].myVar;
+                var dates = response.data[0]['yyyy-mm-dd'];
+
+                //$("#data").text(myVar);
+                //$("#dates").text(dates);
+                //ar asdf = JSON.parse(dates);
+                var dates_arr = jQuery.makeArray(dates);
+                var myVar_arr = jQuery.makeArray(myVar);
+                console.log(typeof(myVar_arr));
+
+                // Map over each data value and convert it to a float
+                var myVar_arr = myVar_arr.map(function(i) {
+                    return parseFloat(i)
+                });
+
+                $('#container').highcharts({
+                    title: {
+                        text: 'Title of the chart',
+                        x: -20 //center
+                    },
+                    subtitle: {
+                        text: 'Source: climate.nkn.uidaho.edu',
+                        x: -20
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        categories: dates_arr,
+                        turboThreshold: 0
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Variable (units)'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        valueSuffix: 'variable units'
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: [{
+                        name: 'Example',
+                        data: myVar_arr,
+                        turboThreshold: 0
+                    }]
+                }); // end highchart
+
+            }) // successfully got JSON response
+
+        .fail(function() {
+            alert("Did not load resource");
+        })
+
+        $("#cancel_button").click(function() {
+            jqxhr.abort()
+            alert("Handler for .click() called. Ignoring AJAX call");
+        }); // Cancel the request
+    });
+</script>
+</head>
+<body>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="data"></div>
+<div id="dates"></div>
+<input type="submit" id="cancel_button">
+</body>
+</html>
+    """
+
+    return HttpResponse(response)
