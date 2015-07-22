@@ -246,7 +246,7 @@ def get_netcdf_data(request):
         #for r in metadata_rows:
             #print type(r), r
 
-        print metadata_rows
+        #print metadata_rows
         # Write CSV style response
         response_string = ""
         response_rows = []
