@@ -9,7 +9,35 @@ FORCE_SCRIPT_NAME = '/Services'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
+
+
+#Required URL parameters for /get-netcdf-data
+lat
+  The WGS84 latitude for the pixel
+lon
+  The WGS84 longitude for the pixel
+data-path
+  URL or local path to the NetCDF file
+variable
+  Name of the variable to retrieve data from
+variable-name
+  User specified name for the variable
+  If return_JSON = True 
+    The JSON object data has a property of user specified variable name
+      data.variable-name
+      data.myVariableName
+
+#Optional URL parameters for /get-netcdf-data
+positive-east-longitude
+  True or False
+download-csv
+  True or False
+  Returns the data formated a .csv file
+decimal_precision
+  Integer Number  0 - 10
+  Sets the number of digitals after the decimal
+request_JSON
+  True of False
+  Returns the data as a JSON object
