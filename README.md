@@ -12,7 +12,7 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
-
+<pre>
 #Required URL parameters for /get-netcdf-data
 lat
   The WGS84 latitude for the pixel
@@ -41,3 +41,4 @@ decimal_precision
 request_JSON
   True of False
   Returns the data as a JSON object
+</pre>
