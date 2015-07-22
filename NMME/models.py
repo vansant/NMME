@@ -14,14 +14,14 @@ def find_start_date_from_days_since(days_since, start_year, start_month, start_d
     start_date = dt.date(start_year, start_month, start_day)
     return start_date + days_since
 
-def get_netcdf_metadata(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
+def get_netcdf_metadata(lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path):
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
 
     #print filehandle.variables
     return [filehandle.variables[variable].long_name, filehandle.variables[variable].units]
  
-def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path, request_lat_lon):
+def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path, request_lat_lon):
 
     # File handles
     pathname = data_path
@@ -48,7 +48,7 @@ def get_netcdf_data(day, lat, lon, positive_east_longitude, variable, request_da
 
     time_num=len(timehandle)
     
-    timeindex=range(day-1,time_num)  #python starts arrays at 0
+    timeindex=range(time_num)  #python starts arrays at 0
     time=timehandle[timeindex]
     #print time
     lat_array = lathandle[:]

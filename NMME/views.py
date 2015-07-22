@@ -31,7 +31,7 @@ def testJSON(request):
                 var jqxhr = $.ajax({
                     url: "http://127.0.0.1:8000/get-netcdf-data/",
                     method: "GET",
-                    data: "day=1&download-csv=False&lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&request_JSON=True&decimal_precision=0",
+                    data: "&download-csv=False&lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&request_JSON=True&decimal_precision=0",
                 })
                   .done(function(data) {
                     console.log(data);
@@ -60,15 +60,6 @@ def allow_mulitple_parameters(args):
 
 def get_netcdf_data(request):
     errors = []
-
-    # Day
-    if 'day' in request.GET:
-        try:
-            day = int(request.GET['day'])
-        except:
-        	errors.append("Day parameter needs to be an integer")
-    else:
-    	errors.append("You need to specify a day parameter")
 
     # Lat
     if 'lat' in request.GET:
@@ -214,10 +205,10 @@ def get_netcdf_data(request):
         #print variable_list
         for i in range(len(variable_list)):
             #print i
-            function_parameters.append((day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon))
+            function_parameters.append((lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon))
             
             # m returns variable long name, variable units
-            m = models.get_netcdf_metadata(day,lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i])
+            m = models.get_netcdf_metadata(lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i])
 
             # Contains long names of variables
             metadata_list.append(m[0])
@@ -230,12 +221,12 @@ def get_netcdf_data(request):
 
         # After getting all data successfully we call the dates
         request_dates = "True"
-        netcdf_time_list = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False)
+        netcdf_time_list = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False)
 
         #  After getting all data successfully set request dates false and request_lat_lon true
         request_dates = "False"
         request_lat_lon = "True"
-        actual_lat_lon = models.get_netcdf_data(day, lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon)
+        actual_lat_lon = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon)
     
         # Converts from U'' to ''
         metadata_column_list = [str(x) for x in metadata_column_list]
