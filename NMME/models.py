@@ -110,15 +110,22 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
         # Convert datetime.date(1950, 1, 1) to 1950-01-01
         date_list = [date.isoformat() for date in date_list]
 
-        print "trying to do this"
+        #print "trying to do this"
         if start_day == '' or end_date == '':
             start_time_index = ''
             end_time_index = ''
             return date_list[:], [start_time_index, end_time_index]
         else:
-            start_time_index = date_list.index(start_date)
-            end_time_index = date_list.index(end_date)
-            print type(start_time_index)
+            try:
+                start_time_index = date_list.index(start_date)
+            except:
+                return ["error", "start_date not in dataset"], ['','']
+            try:
+                end_time_index = date_list.index(end_date)
+            except:
+                return ["error", "end_date not in dataset"], ['','']
+            
+            #print type(start_time_index)
             # return the filtered times as well as the index for start_date and end_date
             return date_list[start_time_index: end_time_index], [start_time_index, end_time_index]
 

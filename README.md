@@ -45,4 +45,14 @@ request-JSON
   True of False
   Returns the data as a JSON object
   Default = False
+start-date
+    yyyy-mm-dd
+    Must also declare with end-date
+    Used to filter data by date range
+    1950-01-01
+end-date
+    yyyy-mm-dd
+    Must also declare with start-date
+    Used to filter data by date range
+    1955-01-01
 </pre>
