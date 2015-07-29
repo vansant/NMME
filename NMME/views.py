@@ -28,6 +28,22 @@ def allow_mulitple_parameters(args):
 def get_netcdf_data(request):
     errors = []
 
+    # Start date
+    start_date = ''
+    if 'start-date' in request.GET:
+        try:
+            start_date = str(request.GET['start-date'])
+        except:
+            errors.append("Enter  a start-date in yyyy-mm-dd format")
+
+    # End date
+    end_date = ''
+    if 'end-date' in request.GET:
+        try:
+            end_date = str(request.GET['end-date'])
+        except:
+            errors.append("Enter an end-date in yyyy-mm-dd format")
+
     # Lat
     if 'lat' in request.GET:
         try:
@@ -156,6 +172,18 @@ def get_netcdf_data(request):
         # List for all returned netcdf data
         netcdf_data_list = []
 
+
+        # Get the dates data
+        request_dates = "True"
+        netcdf_time_list, netcdf_time_index = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False, start_date=start_date, end_date=end_date, start_date_index='', end_date_index='' )
+
+        # Index of times that have been filtered
+        netcdf_start_date_index = netcdf_time_index[0]
+        netcdf_end_date_index = netcdf_time_index[1]
+        #print netcdf_start_time_index
+        #print netcdf_end_time_index
+
+
         # Set as false until request is made later for just the dates
         request_dates = "False"
 
@@ -169,7 +197,7 @@ def get_netcdf_data(request):
         #print variable_list
         for i in range(len(variable_list)):
             #print i
-            function_parameters.append((lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon))
+            function_parameters.append((lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon, start_date, end_date, netcdf_start_date_index, netcdf_end_date_index))
             
             # m returns variable long name, variable units
             m = models.get_netcdf_metadata(lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i])
@@ -183,14 +211,13 @@ def get_netcdf_data(request):
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
-        # After getting all data successfully we call the dates
-        request_dates = "True"
-        netcdf_time_list = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False)
+
+        #print netcdf_time_list.index("1960-01-01")
 
         #  After getting all data successfully set request dates false and request_lat_lon true
         request_dates = "False"
         request_lat_lon = "True"
-        actual_lat_lon = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon)
+        actual_lat_lon = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon, start_date='', end_date='', start_date_index='', end_date_index='' )
     
         # Converts from U'' to ''
         metadata_column_list = [str(x) for x in metadata_column_list]
@@ -351,14 +378,14 @@ def chart_netcdf_data(request):
         var jqxhr = $.ajax({
                 url: "/get-netcdf-data",
                 method: "GET",
-                data: "lat=44&lon=-116&data-path=http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_huss_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_daily_aggregated.nc&variable=specific_humidity&variable-name=myVar&request-JSON=True",
+                data: "lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&start-date=1980-01-01&end-date=1980-02-02&request-JSON=True",
             })
             .done(function(response) {
                 console.log(data);
                 //alert( data.metadata );
 
                 // Assign data from JSON notice the different formats??
-                var myVar = response.data[0].myVar;
+                var myVar = response.data[0].tasmax;
                 var dates = response.data[0]['yyyy-mm-dd'];
 
                 //$("#data").text(myVar);
