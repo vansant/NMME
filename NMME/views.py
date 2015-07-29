@@ -297,7 +297,7 @@ def get_netcdf_data(request):
 
         for variable_dataset in netcdf_data_list[0]:
             # Convert to float and truncate to decimal precision variable
-            variable_dataset = [precision_string.format(i) for i in variable_dataset]
+            variable_dataset = [float(precision_string.format(i)) for i in variable_dataset]
             variable_columns.append(variable_dataset)
         
         # Create time and variable rows
@@ -389,9 +389,10 @@ def chart_netcdf_data(request):
   <title> NetCDF highcharts demo</title>
   <script type='text/javascript' src='//code.jquery.com/jquery-1.9.1.js'></script>
   <script type='text/javascript'>
-    $(function() {
 
-        var jqxhr = $.ajax({
+    function load_chart_data(){
+    alert('calling function');
+    var jqxhr = $.ajax({
                 url: "/get-netcdf-data",
                 method: "GET",
                 data: "lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&start-date=1980-01-01&end-date=1980-02-02&request-JSON=True",
@@ -412,9 +413,9 @@ def chart_netcdf_data(request):
                 console.log(typeof(myVar_arr));
 
                 // Map over each data value and convert it to a float
-                var myVar_arr = myVar_arr.map(function(i) {
-                    return parseFloat(i)
-                });
+                //var myVar_arr = myVar_arr.map(function(i) {
+                //    return parseFloat(i)
+                //});
 
                 $('#container').highcharts({
                     title: {
@@ -458,14 +459,28 @@ def chart_netcdf_data(request):
 
             }) // successfully got JSON response
 
-        .fail(function() {
-            alert("Did not load resource");
-        })
+        //.fail(function() {
+        //    alert("Did not load resource");
+        //})
 
         $("#cancel_button").click(function() {
             jqxhr.abort()
             alert("Handler for .click() called. Ignoring AJAX call");
         }); // Cancel the request
+
+    }
+
+    $( document ).ready(function() {
+
+
+        $("#submit_button").click(function(event) {
+            event.preventDefault();
+            load_chart_data();
+            alert("Making the AJAX call");
+        }); // Submit the request
+
+
+    
     });
 </script>
 </head>
@@ -475,7 +490,31 @@ def chart_netcdf_data(request):
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div id="data"></div>
 <div id="dates"></div>
-<input type="submit" id="cancel_button">
+
+
+<form id="my_form">
+</br>
+lat: <input type="text" id="lat">
+</br>
+lon: <input type="text" id="lon">
+</br>
+Data path: <input type="text" value="http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc
+" id="data-path">
+</br>
+variable: <input type="text" id="variable" value="air_temperature">
+</br>
+variable name: <input type="text" id="variable-name" value="tasmax">
+</br>
+start date: <input type="date" id="start-date" value="1980-01-01">
+</br>
+end date: <input type="date" id="end-date" value="1980-02-02">
+</br>
+request as JSON: <input type="text" id="request-JSON" value="True">
+<br/>
+<input type="submit" value="Request chart" id="submit_button">
+<input type="submit" value="Cancel request" id="cancel_button">
+</form>
+
 </body>
 </html>
     """
