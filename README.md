@@ -1,5 +1,5 @@
 # NMME
-
+<pre>
 # Setup SECRET_KEY for setting.py
 Create a file called local_settings.py
 Inside local_settings.py create a variable called SECRET_KEY and assign a string (long, random key).
@@ -12,7 +12,7 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
 
-<pre>
+
 #Required URL parameters for /get-netcdf-data
 lat
   The WGS84 latitude for the pixel

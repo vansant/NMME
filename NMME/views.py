@@ -391,11 +391,11 @@ def chart_netcdf_data(request):
   <script type='text/javascript'>
 
     function load_chart_data(){
-    alert('calling function');
+    //alert('calling function');
     var jqxhr = $.ajax({
                 url: "/get-netcdf-data",
                 method: "GET",
-                data: "lat=45&lon=-105&positive-east-longitude=True&data-path=http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc&variable=air_temperature&variable-name=tasmax&start-date=1980-01-01&end-date=1980-02-02&request-JSON=True",
+                data: $("#my_form").serialize(),
             })
             .done(function(response) {
                 console.log(data);
@@ -476,7 +476,8 @@ def chart_netcdf_data(request):
         $("#submit_button").click(function(event) {
             event.preventDefault();
             load_chart_data();
-            alert("Making the AJAX call");
+            //alert($("#my_form").serialize());
+            //window.open("http://localhost:8000/get-netcdf-data/?" + $("#my_form").serialize());
         }); // Submit the request
 
 
@@ -494,22 +495,22 @@ def chart_netcdf_data(request):
 
 <form id="my_form">
 </br>
-lat: <input type="text" id="lat">
+lat: <input type="text" value="45" id="lat" name="lat">
 </br>
-lon: <input type="text" id="lon">
+lon: <input type="text" value="100" id="lon" name="lon">
 </br>
-Data path: <input type="text" value="http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc
+Data path: <input type="text"  name="data-path"value="http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc
 " id="data-path">
 </br>
-variable: <input type="text" id="variable" value="air_temperature">
+variable: <input type="text" id="variable" value="air_temperature" name="variable">
 </br>
-variable name: <input type="text" id="variable-name" value="tasmax">
+variable name: <input type="text" id="variable-name" value="tasmax" name="variable-name">
 </br>
-start date: <input type="date" id="start-date" value="1980-01-01">
+start date: <input type="date" id="start-date" value="1980-01-01" name="start-date">
 </br>
-end date: <input type="date" id="end-date" value="1980-02-02">
+end date: <input type="date" id="end-date" value="1980-02-02" name="end-date">
 </br>
-request as JSON: <input type="text" id="request-JSON" value="True">
+request as JSON: <input type="text" id="request-JSON" value="True" name="request-JSON">
 <br/>
 <input type="submit" value="Request chart" id="submit_button">
 <input type="submit" value="Cancel request" id="cancel_button">
