@@ -55,4 +55,10 @@ end-date
     Must also declare with start-date
     Used to filter data by date range
     1955-01-01
+filter-month
+    Must be an integer 0-11
+    Used to filter data by month
+    0 = Jan
+    2 = Mar
+    11 = Dec
 </pre>
