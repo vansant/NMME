@@ -452,6 +452,9 @@ def chart_netcdf_data(request):
         float: left;
       }
 
+      #form-container{
+              clear: left;
+      }
 
 
   </style>
@@ -467,11 +470,11 @@ def chart_netcdf_data(request):
                 data: $("#my_form").serialize(),
             })
             .done(function(response) {
-                console.log(data);
+                //console.log(data);
                 //alert( data.metadata );
 
                 // Assign data from JSON notice the different formats??
-                var myVar = response.data[0].tasmax;
+                var myVar = response.data[0]['tasmax'];
                 var dates = response.data[0]['yyyy-mm-dd'];
 
                 //Remove old data if it's there
@@ -525,7 +528,7 @@ def chart_netcdf_data(request):
                         borderWidth: 0
                     },
                     series: [{
-                        name: 'Example',
+                        name: $('#variable-name').val(),
                         data: myVar_arr,
                         turboThreshold: 0
                     }]
@@ -643,10 +646,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <div id="map-canvas"></div>
 <div id="chart-container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-<div id="data"></div>
-<div id="dates"></div>
-
-
 <div id="form-container">
 <form id="my_form">
 </br>
