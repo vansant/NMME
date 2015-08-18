@@ -8,6 +8,39 @@ from django.http import HttpResponse
 
 import models
 
+def filter_dates_by_month(dates, months):
+    """" Takes a list of date strings (01-01-1900)  and returns the filtered month(s)
+        dates:
+            A list of lists containing dates and csv data to filter over
+        months:
+            A list of months to filter over
+            0 is Jan where 11 is Dec
+    """
+
+   # Used to map month index to month string value    
+    month_dictionary = {0: '01', 1: '02', 2: '03', 3: '04', 4: '05', 5: '06',
+         6: '07', 7: '08', 8: '09', 9: '10', 10: '11', 11: '12'}
+
+    # Dictionary to hold monthly data
+    month_data_dictionary = {}
+
+    # Add a list for each month to hold data
+    for m in months:
+        month_data_dictionary[m] = []
+ 
+    # Process each date
+    for date in dates:
+
+        # Process each month in the months list
+        for month in months:
+            #print month_dictionary[month], date[0][5:7]
+            if date[0][5:7] == month_dictionary[month]:
+                #print date
+                month_data_dictionary[month].append(date)
+            # else:
+            #      print month_dictionary[month], date[0][5:7]
+
+    return  month_data_dictionary     
 
 # This sets the NumPy array threshold to infinity so it does not truncate with ...
 np.set_printoptions(threshold=np.inf)
@@ -29,6 +62,13 @@ def allow_mulitple_parameters(args):
 def get_netcdf_data(request):
     errors = []
 
+    # Filter Month
+    filter_month = None
+    if 'filter-month' in request.GET:
+        try:
+            filter_month = int(request.GET['filter-month'])
+        except:
+            errors.append("Enter an integer for the correct month. 0 is January 11 is December")
     # Start date
     start_date = ''
     if 'start-date' in request.GET:
@@ -310,6 +350,15 @@ def get_netcdf_data(request):
                 #for x in new_row:
             response_rows.append(new_row)
                  #   new_row = []
+
+        if filter_month:
+            # Concatenate lists to stings
+            response_rows_strings = [[','.join(x)] for x in response_rows]
+            #print response_rows_strings
+            filtered_dates = filter_dates_by_month(dates=response_rows_strings, months=[filter_month])
+
+            #print filtered_dates
+            response_rows = [x[0].split(',') for x in filtered_dates[int(filter_month)]]
 
         response_metadata_rows = []
         # Create metadata rows
