@@ -453,7 +453,11 @@ def chart_netcdf_data(request):
       }
 
       #form-container{
-              clear: left;
+        clear: left;
+      }
+
+      #data-container{
+        overflow-y: scroll;
       }
 
 
