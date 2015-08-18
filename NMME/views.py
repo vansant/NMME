@@ -8,40 +8,6 @@ from django.http import HttpResponse
 
 import models
 
-def filter_dates_by_month(dates, months):
-    """" Takes a list of date strings (01-01-1900)  and returns the filtered month(s)
-        dates:
-            A list of lists containing dates and csv data to filter over
-        months:
-            A list of months to filter over
-            0 is Jan where 11 is Dec
-    """
-
-   # Used to map month index to month string value    
-    month_dictionary = {0: '01', 1: '02', 2: '03', 3: '04', 4: '05', 5: '06',
-         6: '07', 7: '08', 8: '09', 9: '10', 10: '11', 11: '12'}
-
-    # Dictionary to hold monthly data
-    month_data_dictionary = {}
-
-    # Add a list for each month to hold data
-    for m in months:
-        month_data_dictionary[m] = []
- 
-    # Process each date
-    for date in dates:
-
-        # Process each month in the months list
-        for month in months:
-            #print month_dictionary[month], date[0][5:7]
-            if date[0][5:7] == month_dictionary[month]:
-                #print date
-                month_data_dictionary[month].append(date)
-            # else:
-            #      print month_dictionary[month], date[0][5:7]
-
-    return  month_data_dictionary     
-
 
 # This sets the NumPy array threshold to infinity so it does not truncate with ...
 np.set_printoptions(threshold=np.inf)
@@ -62,15 +28,6 @@ def allow_mulitple_parameters(args):
 
 def get_netcdf_data(request):
     errors = []
-
-
-    # Filter Month
-    filter_month = None
-    if 'filter-month' in request.GET:
-        try:
-            filter_month = int(request.GET['filter-month'])
-        except:
-            errors.append("Enter an integer for the correct month. 0 is January 11 is December")
 
     # Start date
     start_date = ''
@@ -353,20 +310,6 @@ def get_netcdf_data(request):
                 #for x in new_row:
             response_rows.append(new_row)
                  #   new_row = []
-        #print response_rows[0:5]
-
-
-
-        if filter_month:
-            # Concatenate lists to stings
-            response_rows_strings = [[','.join(x)] for x in response_rows]
-            #print response_rows_strings
-            filtered_dates = filter_dates_by_month(dates=response_rows_strings, months=[filter_month])
-
-            #print filtered_dates
-            response_rows = [x[0].split(',') for x in filtered_dates[int(filter_month)]]
-            #print response_rows
-
 
         response_metadata_rows = []
         # Create metadata rows
@@ -444,6 +387,26 @@ def chart_netcdf_data(request):
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title> NetCDF highcharts demo</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #map-canvas, #container {
+        height: 50%;
+        width: 50%;
+        float: left;
+        
+
+      }
+
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
   <script type='text/javascript' src='//code.jquery.com/jquery-1.9.1.js'></script>
   <script type='text/javascript'>
 
@@ -462,7 +425,7 @@ def chart_netcdf_data(request):
                 var myVar = response.data[0].tasmax;
                 var dates = response.data[0]['yyyy-mm-dd'];
 
-                //$("#data").text(myVar);
+                $("#data").text(myVar);
                 //$("#dates").text(dates);
                 //ar asdf = JSON.parse(dates);
                 var dates_arr = jQuery.makeArray(dates);
@@ -470,9 +433,9 @@ def chart_netcdf_data(request):
                 console.log(typeof(myVar_arr));
 
                 // Map over each data value and convert it to a float
-                //var myVar_arr = myVar_arr.map(function(i) {
-                //    return parseFloat(i)
-                //});
+                var myVar_arr = myVar_arr.map(function(i) {
+                    return parseFloat(i)
+                });
 
                 $('#container').highcharts({
                     title: {
@@ -530,6 +493,8 @@ def chart_netcdf_data(request):
     $( document ).ready(function() {
 
 
+
+
         $("#submit_button").click(function(event) {
             event.preventDefault();
             load_chart_data();
@@ -541,10 +506,50 @@ def chart_netcdf_data(request):
     
     });
 </script>
+
+    <script>
+function initialize() {
+  var mapOptions = {
+    zoom: 4,
+    center: new google.maps.LatLng(-25.363882, 131.044922)
+  };
+
+  var map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+
+  var marker = new google.maps.Marker({
+    position: map.getCenter(),
+    draggable: true,
+    map: map,
+    title: 'Click to zoom'
+  });
+
+  google.maps.event.addListener(map, 'center_changed', function() {
+    // 3 seconds after the center of the map has changed, pan back to the
+    // marker.
+    window.setTimeout(function() {
+      map.panTo(marker.getPosition());
+    }, 3000);
+  });
+
+  google.maps.event.addListener(marker, 'dragend', function(event) {
+    //alert(event.latLng);
+    //map.setZoom(8);
+    //map.setCenter(marker.getPosition());
+    $("#lat").val(event.latLng.lat());
+    $("#lon").val(event.latLng.lng());
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+
 </head>
 <body>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
+<div id="map-canvas"></div>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div id="data"></div>
 <div id="dates"></div>
