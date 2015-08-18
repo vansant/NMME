@@ -446,13 +446,13 @@ def chart_netcdf_data(request):
         padding: 0;
       }
 
-      #map-canvas, #container {
+      #map-canvas, #chart-container, #form-container, #data-container {
         height: 50%;
         width: 50%;
         float: left;
-        
-
       }
+
+
 
   </style>
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
@@ -474,8 +474,9 @@ def chart_netcdf_data(request):
                 var myVar = response.data[0].tasmax;
                 var dates = response.data[0]['yyyy-mm-dd'];
 
-                $("#data").text(myVar);
-                //$("#dates").text(dates);
+                $("#data-container").append(dates);
+                $("#data-container").append(myVar);
+
                 //ar asdf = JSON.parse(dates);
                 var dates_arr = jQuery.makeArray(dates);
                 var myVar_arr = jQuery.makeArray(myVar);
@@ -486,7 +487,7 @@ def chart_netcdf_data(request):
                     return parseFloat(i)
                 });
 
-                $('#container').highcharts({
+                $('#chart-container').highcharts({
                     title: {
                         text: 'Title of the chart',
                         x: -20 //center
@@ -608,11 +609,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 <div id="map-canvas"></div>
-<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="chart-container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div id="data"></div>
 <div id="dates"></div>
 
 
+<div id="form-container">
 <form id="my_form">
 </br>
 lat: <input type="text" value="41" id="lat" name="lat">
@@ -637,7 +639,8 @@ Filter by Month: <input type="text" id="filter-month" value="0" name="filter-mon
 <input type="submit" value="Request chart" id="submit_button">
 <input type="submit" value="Cancel request" id="cancel_button">
 </form>
-
+</div>
+<div id="data-container"></div>
 </body>
 </html>
     """
