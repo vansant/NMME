@@ -470,19 +470,24 @@ def chart_netcdf_data(request):
                 data: $("#my_form").serialize(),
             })
             .done(function(response) {
-                //console.log(data);
-                //alert( data.metadata );
 
                 // Assign data from JSON notice the different formats??
                 var myVar = response.data[0]['tasmax'];
                 var dates = response.data[0]['yyyy-mm-dd'];
 
                 //Remove old data if it's there
-                $("#data-container").removeData();
+                $("#data-container").empty();
+
+                // For each date
+                $.each( dates, function( index ) {
+                    var row = dates[index] +','+ myVar[index];
+                    //console.log(row);
+                    $("#data-container").append(row + "</br>");
+                });
 
                 // Set the data
-                $("#data-container").append(dates);
-                $("#data-container").append(myVar);
+                //$("#data-container").append(dates);
+                //$("#data-container").append(myVar);
 
                 //ar asdf = JSON.parse(dates);
                 var dates_arr = jQuery.makeArray(dates);
@@ -616,8 +621,6 @@ function initialize() {
     map: map,
     title: 'Click to zoom'
   });
-
-
 
   google.maps.event.addListener(marker, 'drag', function(event) {
     //alert(event.latLng);
