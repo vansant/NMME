@@ -35,7 +35,7 @@ def filter_dates_by_month(dates, months):
         for month in months:
             #print month_dictionary[month], date[0][5:7]
             if date[0][5:7] == month_dictionary[month]:
-                print date
+                #print date
                 month_data_dictionary[month].append(date)
             # else:
             #      print month_dictionary[month], date[0][5:7]
@@ -560,7 +560,7 @@ def chart_netcdf_data(request):
 function initialize() {
   var mapOptions = {
     zoom: 4,
-    center: new google.maps.LatLng(-25.363882, 131.044922)
+    center: new google.maps.LatLng(41, -100)
   };
 
   var map = new google.maps.Map(document.getElementById('map-canvas'),
@@ -579,6 +579,15 @@ function initialize() {
     window.setTimeout(function() {
       map.panTo(marker.getPosition());
     }, 3000);
+  });
+
+
+  google.maps.event.addListener(marker, 'drag', function(event) {
+    //alert(event.latLng);
+    //map.setZoom(8);
+    //map.setCenter(marker.getPosition());
+    $("#lat").val(event.latLng.lat());
+    $("#lon").val(event.latLng.lng());
   });
 
   google.maps.event.addListener(marker, 'dragend', function(event) {
@@ -606,9 +615,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 <form id="my_form">
 </br>
-lat: <input type="text" value="45" id="lat" name="lat">
+lat: <input type="text" value="41" id="lat" name="lat">
 </br>
-lon: <input type="text" value="100" id="lon" name="lon">
+lon: <input type="text" value="-100" id="lon" name="lon">
 </br>
 Data path: <input type="text"  name="data-path"value="http://inside-dev1.nkn.uidaho.edu:8080/thredds/dodsC/agg_macav2metdata_tasmax_bcc-csm1-1_r1i1p1_historical_1950_2005_CONUS_daily.nc
 " id="data-path">
