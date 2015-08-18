@@ -35,7 +35,7 @@ def filter_dates_by_month(dates, months):
         for month in months:
             #print month_dictionary[month], date[0][5:7]
             if date[0][5:7] == month_dictionary[month]:
-                #print date
+                print date
                 month_data_dictionary[month].append(date)
             # else:
             #      print month_dictionary[month], date[0][5:7]
@@ -351,7 +351,7 @@ def get_netcdf_data(request):
             response_rows.append(new_row)
                  #   new_row = []
 
-        if filter_month:
+        if filter_month >=0 or filter_month <= 11:
             # Concatenate lists to stings
             response_rows_strings = [[','.join(x)] for x in response_rows]
             #print response_rows_strings
@@ -622,6 +622,8 @@ start date: <input type="date" id="start-date" value="1980-01-01" name="start-da
 end date: <input type="date" id="end-date" value="1980-02-02" name="end-date">
 </br>
 request as JSON: <input type="text" id="request-JSON" value="True" name="request-JSON">
+<br/>
+Filter by Month: <input type="text" id="filter-month" value="0" name="filter-month">
 <br/>
 <input type="submit" value="Request chart" id="submit_button">
 <input type="submit" value="Cancel request" id="cancel_button">
