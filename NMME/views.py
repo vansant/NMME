@@ -474,6 +474,10 @@ def chart_netcdf_data(request):
                 var myVar = response.data[0].tasmax;
                 var dates = response.data[0]['yyyy-mm-dd'];
 
+                //Remove old data if it's there
+                $("#data-container").removeData();
+
+                // Set the data
                 $("#data-container").append(dates);
                 $("#data-container").append(myVar);
 
@@ -542,7 +546,43 @@ def chart_netcdf_data(request):
 
     $( document ).ready(function() {
 
-
+$('#chart-container').highcharts({
+                    title: {
+                        text: 'Title of the chart',
+                        x: -20 //center
+                    },
+                    subtitle: {
+                        text: 'Source: climate.nkn.uidaho.edu',
+                        x: -20
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        turboThreshold: 0
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Variable (units)'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        valueSuffix: 'variable units'
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    },
+                    series: [{
+                        name: 'Example',
+                        turboThreshold: 0
+                    }]
+                }); // end highchart
 
 
         $("#submit_button").click(function(event) {
@@ -574,13 +614,6 @@ function initialize() {
     title: 'Click to zoom'
   });
 
-  google.maps.event.addListener(map, 'center_changed', function() {
-    // 3 seconds after the center of the map has changed, pan back to the
-    // marker.
-    window.setTimeout(function() {
-      map.panTo(marker.getPosition());
-    }, 3000);
-  });
 
 
   google.maps.event.addListener(marker, 'drag', function(event) {
