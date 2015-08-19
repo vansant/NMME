@@ -63,7 +63,7 @@ def get_netcdf_data(request):
     errors = []
 
     # Filter Month
-    filter_month = None
+    filter_month = ""
     if 'filter-month' in request.GET:
         try:
             filter_month = int(request.GET['filter-month'])
@@ -351,7 +351,8 @@ def get_netcdf_data(request):
             response_rows.append(new_row)
                  #   new_row = []
 
-        if filter_month >=0 or filter_month <= 11:
+        if filter_month in range(0,12):
+            print "trying thiis"
             # Concatenate lists to stings
             response_rows_strings = [[','.join(x)] for x in response_rows]
             #print response_rows_strings
