@@ -50,15 +50,22 @@ def get_netcdf_metadata(lat, lon, positive_east_longitude, variable, request_dat
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
 
+    metadata_name = ""
+
+    try:
+        metadata_name = filehandle.variables[variable].long_name
+    except:
+        metadata_name = filehandle.variables[variable].description
+
     #print filehandle.variables
-    return [filehandle.variables[variable].long_name, filehandle.variables[variable].units]
+    return [metadata_name, filehandle.variables[variable].units]
  
 def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, start_year, start_month, start_day, time_metric,time_units, data_path, request_lat_lon, start_date, end_date, start_date_index, end_date_index):
 
     # File handles
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
-
+    print filehandle.variables
     try:
         lathandle = filehandle.variables['lat']
     except:
@@ -72,10 +79,14 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
     try:
         timehandle=filehandle.variables['time']
     except:
-        timehandle=filehandle.variables['Time']
+        try:
+            timehandle=filehandle.variables['Time']
+        except:
+            timehandle=filehandle.variables['day']
+
 
     datahandle=filehandle.variables[variable]
-    #print datahandle.dimensions
+    print datahandle.dimensions
 
 
     time_num=len(timehandle)
@@ -148,7 +159,7 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
 
     #print timeindex
     for var in variable_dimensions:
-        if var == "time" or var == "Time":
+        if var == "time" or var == "Time" or var == "day":
             variable_index_dictionary[var] = timeindex
         if var == "lat" or var == "Latitude":
             variable_index_dictionary[var] = closestLat
