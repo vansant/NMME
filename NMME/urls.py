@@ -7,5 +7,6 @@ urlpatterns = patterns('',
         url(r'^$', 'NMME.views.index', name='index'),
         url(r'^get-netcdf-data/', 'NMME.views.get_netcdf_data', name='get_netcdf_data'),
         url(r'^chart-netcdf-data/', 'NMME.views.chart_netcdf_data', name='chart_netcdf_data'),
+        url(r'^get-streamflow-data/', 'streamflow.views.streamflow', name='get_streamflow_data'),
 )
 
