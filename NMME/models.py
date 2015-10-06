@@ -65,7 +65,7 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
     # File handles
     pathname = data_path
     filehandle=Dataset(pathname,'r',format="NETCDF4")
-    print filehandle.variables
+    #print filehandle.variables
     try:
         lathandle = filehandle.variables['lat']
     except:
@@ -86,7 +86,7 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
 
 
     datahandle=filehandle.variables[variable]
-    print datahandle.dimensions
+    #print datahandle.dimensions
 
 
     time_num=len(timehandle)
@@ -174,7 +174,7 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
 
     data = datahandle[variable_index_dictionary[variable_dimensions_dictionary[0]], variable_index_dictionary[variable_dimensions_dictionary[1]], variable_index_dictionary[variable_dimensions_dictionary[2]]]
     if start_date_index == '' or end_date_index == '':
-        print "return all data"
+        #print "return all data"
         return data[:]
     else:
         return data[start_date_index:end_date_index]

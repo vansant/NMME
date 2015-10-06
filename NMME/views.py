@@ -267,7 +267,9 @@ def get_netcdf_data(request):
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
-
+        # Close subprocess workers (open files)
+        p.terminate()
+        p.join()
         #print netcdf_time_list.index("1960-01-01")
 
         #  After getting all data successfully set request dates false and request_lat_lon true
@@ -352,7 +354,6 @@ def get_netcdf_data(request):
                  #   new_row = []
 
         if filter_month in range(0,12):
-            print "trying thiis"
             # Concatenate lists to stings
             response_rows_strings = [[','.join(x)] for x in response_rows]
             #print response_rows_strings
