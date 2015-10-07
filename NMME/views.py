@@ -126,7 +126,7 @@ def get_netcdf_data(request):
         if positive_east_longitude == "True" or positive_east_longitude == "False":
             pass
         else:
-            errors.append("positive-east-longitude paramater should be either True or False")
+            errors.append("positive-east-longitude paramxieater should be either True or False")
     
     # Variable
     if 'variable' in request.GET:
@@ -135,7 +135,7 @@ def get_netcdf_data(request):
 
         for variable in variable_list:
             if str(variable).isdigit():
-                errors.append("variable paramaters must be a a variable name not a number")
+                errors.append("variable parameters must be a a variable name not a number")
             else:
                 str(variable)
     else:
