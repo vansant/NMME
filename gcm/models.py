@@ -2,6 +2,10 @@ import math
 import numpy as np
 import pandas as pd
 
+def index_from_numpy_array(array, value):
+    """ Returns the index of the closest value from from NumPy Array"""
+    return (np.abs(array-value)).argmin()
+
 def get_date_no_leap_year(index):
     """ Function to calculate the year-month-day from netCDF4 days since 1900-01-01 index which are calculated with no leap years"""
     year = 1900 + math.floor(index/365)

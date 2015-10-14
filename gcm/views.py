@@ -3,20 +3,76 @@ import numpy as np
 from django.http import HttpResponse
 from netCDF4 import Dataset
 
-from .models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data
+from .models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data, index_from_numpy_array
+
 
 def get_scatterplot_data(request):
 	""" View that calculate the average DJF from a NETCDF4 file for a spatial region"""
+	errors = []
+
+	#calculation = 'sum'
+	#SWLat = 45
+	#SWLong= -115
+	#NELat= 47
+	#NELong= -117
+
+	#monthStart = 12
+	#monthEnd = 2
+	#yearStart = 1950
+	#yearEnd = 2005
+
+	# sw lat
+	if 'sw-lat' in request.GET:
+		try:
+			sw_lat = float(request.GET['sw-lat'])
+			if sw_lat < -90 or sw_lat > 90:
+				errors.append("sw-lat parameter needs to within -90 to 90 range")
+		except:
+			errors.append("sw-lat parameter needs to be a float")
+	else:
+		errors.append("You need to specify a sw-lat parameter")
+
+	# sw lon
+	if 'sw-lon' in request.GET:
+		try:
+			sw_lon = float(request.GET['sw-lon'])
+			if sw_lon < -180 or sw_lon > 180:
+				errors.append("sw-lon parameter needs to within -180 to 180 range")
+		except:
+			errors.append("sw-lon parameter needs to be a float")
+	else:
+		errors.append("You need to specify a sw-lon parameter")
+
+
+	# ne lat
+	if 'ne-lat' in request.GET:
+		try:
+			ne_lat = float(request.GET['ne-lat'])
+			if ne_lat < -90 or ne_lat > 90:
+				errors.append("ne-lat parameter needs to within -90 to 90 range")
+		except:
+			errors.append("ne-lat parameter needs to be a float")
+	else:
+		errors.append("You need to specify a ne-lat parameter")
+
+	# ne lon
+	if 'ne-lon' in request.GET:
+		try:
+			ne_lon = float(request.GET['ne-lon'])
+			if ne_lon < -180 or ne_lon > 180:
+				errors.append("ne-lon parameter needs to within -180 to 180 range")
+		except:
+			errors.append("ne-lon parameter needs to be a float")
+	else:
+		errors.append("You need to specify a ne-lon parameter")
+
+	if errors:
+		return HttpResponse(errors)
 
 	# URL parameters
 	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_CLIMATE/projections/nmme/bcsd_nmme_metdata_NCAR_forecast_daily.nc"
 	data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
 	variable = "precipitation"
-	request_dates = "True"
-	positive_east_longitude = False
-	lat = 45
-	lon = -110
-	request_lat_lon = "False"
 
 	# File handles
 	pathname = data_path
@@ -43,18 +99,31 @@ def get_scatterplot_data(request):
 	time_num=len(timehandle)
 	timeindex=range(time_num)  #python starts arrays at 0
 	time=timehandle[timeindex]
+	lat_array = lathandle[:]
+	lon_array = lonhandle[:]
 
-	# Get lat slice range
-	# Need to pass in index of the lat, lon bounding box here
+	positive_east_longitude = "True"
+
+	# Lons from 0-360 converted to -180 to 180
+	if positive_east_longitude == "True":
+		lon_array = [x - 360 for x in lon_array[:]] 
 
 	# Bounding box indices
-	sw_lat = ""
-	sw_lon = ""
-	ne_lat = ""
-	ne_lon = ""
+	sw_lat = index_from_numpy_array(np.array(lat_array), sw_lat)
+	#print SWLat, lat_array[SWLat]
 
-	closestLat = slice(200, 210)
-	closestLon = slice(200, 210)
+	sw_lon = index_from_numpy_array(np.array(lon_array), sw_lon)
+	#print SWLong, lon_array[SWLong]
+
+	ne_lat = index_from_numpy_array(np.array(lat_array), ne_lat)
+	#print NELat, lat_array[NELat]
+
+	ne_lon = index_from_numpy_array(np.array(lon_array), ne_lon)
+	#print NELong, lon_array[NELong]
+
+
+	closestLat = slice(sw_lat, ne_lat)
+	closestLon = slice(ne_lon, sw_lon)
 
 	# Which months to get data for
 	month_list = [11,0,1]
@@ -120,6 +189,7 @@ def get_scatterplot_data(request):
 	data = [i[1] for i in monthly_dates_and_data]
 	#print date_list
 
+	# Process for results
 	results = process_gcm_data(custom_span=len(month_list), sample_method="mean", date_list=date_list, data=data, start_year=1950, end_year=2100, start_month=month_list[0]+1, end_month=month_list[-1]+1)
 
 	# Drop nans
@@ -128,7 +198,4 @@ def get_scatterplot_data(request):
 	print "Average for all specified years: ", np.mean(results)
 	
 	return HttpResponse(np.mean(results))
-
-
-# 35.909229 + 23.590954 + 38.585739
 
