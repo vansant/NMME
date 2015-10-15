@@ -1,9 +1,10 @@
+from multiprocessing import Pool
 import numpy as np
 
 from django.http import HttpResponse
 from netCDF4 import Dataset
 
-from .models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data, index_from_numpy_array
+from models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data, index_from_numpy_array
 
 
 def get_scatterplot_data(request):
@@ -124,12 +125,62 @@ def get_scatterplot_data(request):
 	if errors:
 		return HttpResponse(errors)
 
+	# Set pool of workers
+	p = Pool(20) 
+
+	# Each set of parameters is for one URL call
+	function_parameters = []
+
+	# List for all returned netcdf data
+	netcdf_data_list = []
+
+	model_and_run_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
+
+
+	#sw_lat=45
+	#sw_lon=-111
+	#ne_lat=47
+	#ne_lon=-117
+	#month_list=[11,0,1]
+	#start_year=1950
+	#end_year=2005
+	#end_month=2
+	calculation = "sum"
+	start_month=11
+	variable="precipitation"
+	#data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
+
+	#print variable_list
+	#for i in range(len(model_list)):
+	for model_and_run in model_and_run_list:
+		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_historical_1950_2005_CONUS_monthly_aggregated.nc" % model_and_run
+		print model_and_run, data_path
+		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation))
+
+	# Map to pool - this gets netcdf data into a workable list
+	netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
+
+	#function_parameters.append(())
+	# Close subprocess workers (open files)
+	p.terminate()
+	p.join()
+	#return HttpResponse(np.mean(results))
+	return HttpResponse(netcdf_data_list)
+
+# Pack parameters
+def allow_mulitple_parameters(args):
+    return process_data(*args)
+
+def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation):
 	# Need to add lat vs lat and lon vs lon validation
 
 	# URL parameters
 	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_CLIMATE/projections/nmme/bcsd_nmme_metdata_NCAR_forecast_daily.nc"
-	data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
-	variable = "precipitation"
+	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
+	#variable = "precipitation"
+
+	# this one is different
+	# CCSM4 r6i1p1 
 
 	# File handles
 	pathname = data_path
@@ -248,12 +299,11 @@ def get_scatterplot_data(request):
 	#print date_list
 
 	# Process for results
-	results = process_gcm_data(custom_span=len(month_list), sample_method="mean", date_list=date_list, data=data, start_year=start_year, end_year=end_year, start_month=month_list[0]+1, end_month=month_list[-1]+1)
+	results = process_gcm_data(custom_span=len(month_list), sample_method=calculation, date_list=date_list, data=data, start_year=start_year, end_year=end_year, start_month=month_list[0]+1, end_month=month_list[-1]+1)
 
 	# Drop nans
 	results = results.dropna()
 	print results, len(results), "results",
 	print "Average for all specified years: ", np.mean(results)
-	
-	return HttpResponse(np.mean(results))
+	return np.mean(results)
 
