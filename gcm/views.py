@@ -7,19 +7,74 @@ from .models import  get_date_no_leap_year, spatial_subset, custom_resampler, pr
 
 
 def get_scatterplot_data(request):
-	""" View that calculate the average DJF from a NETCDF4 file for a spatial region"""
+	""" View that calculate the temporal average from a NETCDF4 file for a spatial region"""
 	errors = []
 
-	#calculation = 'sum'
-	#SWLat = 45
-	#SWLong= -115
-	#NELat= 47
-	#NELong= -117
+	# start_month
+	if 'start-month' in request.GET:
+		try:
+			start_month = int(request.GET['start-month'])
+			if start_month < 0 or start_month > 11 :
+				errors.append("start-month parameter needs to to be between 0-11. 0 is Jan where 1 is Dec")
+		except:
+			errors.append("start-month parameter needs to be a int")
+	else:
+		errors.append("You need to specify a start-month parameter")
 
-	#monthStart = 12
-	#monthEnd = 2
-	#yearStart = 1950
-	#yearEnd = 2005
+	# end_month
+	if 'end-month' in request.GET:
+		try:
+			end_month = int(request.GET['end-month'])
+			if end_month < 0 or end_month > 11 :
+				errors.append("end-month parameter needs to to be between 0-11. 0 is Jan where 1 is Dec")
+		except:
+			errors.append("end-month parameter needs to be a int")
+	else:
+		errors.append("You need to specify a end-month parameter")
+
+	months = [0,1,2,3,4,5,6,7,8,9,10,11]
+
+	if start_month >= end_month:
+		print "asdasdasd asd aasd asd"
+		month_list = months[start_month:]
+		month_list = month_list+months[:end_month]
+		print month_list
+	else:
+		print "doing this shoudlasddas"
+		month_list = months[start_month:end_month]
+		print month_list
+
+
+	# Which months to get data for
+	#month_list = [11,0,1]
+
+	# start_year
+	if 'start-year' in request.GET:
+		try:
+			start_year = int(request.GET['start-year'])
+			if start_year < 1950:
+				errors.append("start-year parameter needs to to be at least 1950")
+		except:
+			errors.append("start-year parameter needs to be a int")
+	else:
+		errors.append("You need to specify a start-year parameter")
+
+	# end_year
+	if 'end-year' in request.GET:
+		try:
+			end_year = int(request.GET['end-year'])
+			if end_year > 2005:
+				errors.append("end-year parameter needs to to be at 2005 or less")
+		except:
+			errors.append("end-year parameter needs to be a int")
+	else:
+		errors.append("You need to specify a end-year parameter")
+
+	if start_year == end_year:
+		errors.append("start-year and end-year need to be different")
+
+	if start_year >= end_year:
+		errors.append("start-year should be less than end-year")
 
 	# sw lat
 	if 'sw-lat' in request.GET:
@@ -68,6 +123,8 @@ def get_scatterplot_data(request):
 
 	if errors:
 		return HttpResponse(errors)
+
+	# Need to add lat vs lat and lon vs lon validation
 
 	# URL parameters
 	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_CLIMATE/projections/nmme/bcsd_nmme_metdata_NCAR_forecast_daily.nc"
@@ -126,7 +183,7 @@ def get_scatterplot_data(request):
 	closestLon = slice(ne_lon, sw_lon)
 
 	# Which months to get data for
-	month_list = [11,0,1]
+	#month_list = [11,0,1]
 
 	def get_monthly_dates_and_data(month):
 		""" Function that get dates and data for a single month from a NetCDF File"""
@@ -180,6 +237,7 @@ def get_scatterplot_data(request):
 	# Get and sort monthly dates and data
 	monthly_dates_and_data = []
 	for x in month_list:
+		print x
 		monthly_dates_and_data += get_monthly_dates_and_data(x)
 	monthly_dates_and_data.sort()
 
@@ -190,7 +248,7 @@ def get_scatterplot_data(request):
 	#print date_list
 
 	# Process for results
-	results = process_gcm_data(custom_span=len(month_list), sample_method="mean", date_list=date_list, data=data, start_year=1950, end_year=2100, start_month=month_list[0]+1, end_month=month_list[-1]+1)
+	results = process_gcm_data(custom_span=len(month_list), sample_method="mean", date_list=date_list, data=data, start_year=start_year, end_year=end_year, start_month=month_list[0]+1, end_month=month_list[-1]+1)
 
 	# Drop nans
 	results = results.dropna()
