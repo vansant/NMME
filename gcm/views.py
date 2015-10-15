@@ -3,7 +3,7 @@ import numpy as np
 from django.http import HttpResponse
 from netCDF4 import Dataset
 from models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data, index_from_numpy_array
-
+import json
 
 def get_scatterplot_data(request):
 	""" View that calculate the temporal average from a NETCDF4 file for a spatial region"""
@@ -114,6 +114,23 @@ def get_scatterplot_data(request):
 	else:
 		errors.append("You need to specify a ne-lon parameter")
 
+	# calculation
+	if 'calculation' in request.GET:
+		calculation = request.GET['calculation']
+		if calculation == 'sum' or calculation == 'mean':
+			pass
+		else:
+			errors.append("calculation parameter needs to sum or mean")
+	else:
+		errors.append("You need to specify a calculation parameter")
+
+	# variable
+	if 'variable' in request.GET:
+		variable = request.GET['variable']
+	else:
+		errors.append("You need to specify a variable parameter")
+
+	# Return errors
 	if errors:
 		return HttpResponse(errors)
 
@@ -126,17 +143,16 @@ def get_scatterplot_data(request):
 	# List for all returned netcdf data
 	netcdf_data_list = []
 
+	# List of GCM models and runs
 	model_and_run_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
 
-	calculation = "sum"
-	start_month=11
-	variable="precipitation"
-	
 	# Process each model and run
 	for model_and_run in model_and_run_list:
 		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_historical_1950_2005_CONUS_monthly_aggregated.nc" % model_and_run
 		#print model_and_run, data_path
-		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation))
+		model_name = model_and_run.split("_")[0]
+		#print model_name
+		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation, model_name))
 
 	# Map to pool - this gets netcdf data into a workable list
 	netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
@@ -145,22 +161,27 @@ def get_scatterplot_data(request):
 	p.terminate()
 	p.join()
 
-	return HttpResponse(netcdf_data_list)
+    #Dictionary of JSON rows
+	JSON_dictionary = {}
+
+	# Loop through each column and set the colunm name for JSON and assign data
+	#print len(netcdf_data_list[0])
+	for i in range(len(netcdf_data_list[0])):
+		#print netcdf_data_list[0][i][0], type(netcdf_data_list[0][i][0])
+		JSON_dictionary[netcdf_data_list[0][i][0]] = netcdf_data_list[0][i][1]
+	
+	object_for_JSON = {"data":[JSON_dictionary,]}
+	response = json.dumps(object_for_JSON)
+	
+	return HttpResponse(response, content_type="application/json")
+
+	#return HttpResponse(netcdf_data_list)
 
 # Pack parameters
 def allow_mulitple_parameters(args):
     return process_data(*args)
 
-def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation):
-	# Need to add lat vs lat and lon vs lon validation
-
-	# URL parameters
-	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_CLIMATE/projections/nmme/bcsd_nmme_metdata_NCAR_forecast_daily.nc"
-	#data_path = "http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
-	#variable = "precipitation"
-
-	# this one is different
-	# CCSM4 r6i1p1 
+def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation, model_name):
 
 	# File handles
 	pathname = data_path
@@ -283,5 +304,5 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 	results = results.dropna()
 	#print results, len(results), "results",
 	#print "Average for all specified years: ", np.mean(results)
-	return np.mean(results)
+	return model_name, np.mean(results)
 
