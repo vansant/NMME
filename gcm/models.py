@@ -45,29 +45,16 @@ def process_gcm_data(custom_span, sample_method, date_list, data, start_year, en
     custom_span_global = custom_span
     sample_method_global = sample_method
 
-    #print date_list[-1], "This is the index"
-    #print len(date_list), "this is where it is passed in"
-
     # Convert list of dates to pandas date_range 
     pandas_date_range = pd.DatetimeIndex(date_list)
 
-    # pandas_date_range = pd.date_range(start="1950-01", end="2005-12", freq="12M")
-    # print pandas_date_range, "This si what im looking for"
-    # #print len(pandas_date_range), "What epandas expects"
-
     # Create pangdas time series 
     time_series = pd.Series(data, index=pandas_date_range)
-    #print time_series
-    #print len(time_series)
-
-    # # Resample daily to monthly values
-    # month_resample = time_series.resample('M', how=sample_method)
-    # #print month_resample
 
     # Filter out the dates of concern
     #print (start_year,start_month), "this is satataetated"
     filtered_time_range =  time_series['%s-%s'%(start_year,start_month):'%s-%s'%(end_year,end_month)]
-    print filtered_time_range
+    #print filtered_time_range
 
     # M is for pandas months here
     time_span = '%sM' % custom_span

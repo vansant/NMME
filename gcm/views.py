@@ -1,9 +1,7 @@
 from multiprocessing import Pool
 import numpy as np
-
 from django.http import HttpResponse
 from netCDF4 import Dataset
-
 from models import  get_date_no_leap_year, spatial_subset, custom_resampler, process_gcm_data, index_from_numpy_array
 
 
@@ -36,18 +34,12 @@ def get_scatterplot_data(request):
 	months = [0,1,2,3,4,5,6,7,8,9,10,11]
 
 	if start_month >= end_month:
-		print "asdasdasd asd aasd asd"
 		month_list = months[start_month:]
 		month_list = month_list+months[:end_month]
-		print month_list
+		#print month_list
 	else:
-		print "doing this shoudlasddas"
 		month_list = months[start_month:end_month]
-		print month_list
-
-
-	# Which months to get data for
-	#month_list = [11,0,1]
+		#print month_list
 
 	# start_year
 	if 'start-year' in request.GET:
@@ -136,35 +128,23 @@ def get_scatterplot_data(request):
 
 	model_and_run_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
 
-
-	#sw_lat=45
-	#sw_lon=-111
-	#ne_lat=47
-	#ne_lon=-117
-	#month_list=[11,0,1]
-	#start_year=1950
-	#end_year=2005
-	#end_month=2
 	calculation = "sum"
 	start_month=11
 	variable="precipitation"
-	#data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_BNU-ESM_r1i1p1_historical_1950_2005_CONUS_monthly_aggregated.nc"
-
-	#print variable_list
-	#for i in range(len(model_list)):
+	
+	# Process each model and run
 	for model_and_run in model_and_run_list:
 		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_historical_1950_2005_CONUS_monthly_aggregated.nc" % model_and_run
-		print model_and_run, data_path
+		#print model_and_run, data_path
 		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation))
 
 	# Map to pool - this gets netcdf data into a workable list
 	netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
-	#function_parameters.append(())
 	# Close subprocess workers (open files)
 	p.terminate()
 	p.join()
-	#return HttpResponse(np.mean(results))
+
 	return HttpResponse(netcdf_data_list)
 
 # Pack parameters
@@ -241,8 +221,6 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 		# Month to get data for
 		request_month = month
 
-		print request_month
-
 		# Dimensions
 		variable_dimensions = datahandle.dimensions
 
@@ -288,11 +266,11 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 	# Get and sort monthly dates and data
 	monthly_dates_and_data = []
 	for x in month_list:
-		print x
+		#print x
 		monthly_dates_and_data += get_monthly_dates_and_data(x)
 	monthly_dates_and_data.sort()
 
-	print monthly_dates_and_data
+	#print monthly_dates_and_data
 
 	date_list = [i[0] for i in monthly_dates_and_data]
 	data = [i[1] for i in monthly_dates_and_data]
@@ -303,7 +281,7 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 
 	# Drop nans
 	results = results.dropna()
-	print results, len(results), "results",
-	print "Average for all specified years: ", np.mean(results)
+	#print results, len(results), "results",
+	#print "Average for all specified years: ", np.mean(results)
 	return np.mean(results)
 
