@@ -56,8 +56,8 @@ def get_scatterplot_data(request):
 	if 'end-year' in request.GET:
 		try:
 			end_year = int(request.GET['end-year'])
-			if end_year > 2099:
-				errors.append("end-year parameter needs to to be at 2099 or less")
+			if end_year > 2005:
+				errors.append("end-year parameter needs to to be at 2005 or less")
 		except:
 			errors.append("end-year parameter needs to be a int")
 	else:
@@ -146,11 +146,9 @@ def get_scatterplot_data(request):
 	# List of GCM models and runs
 	model_and_run_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
 
-	time_list = ["historical_1950_2005", "rcp45_2006_2099", "rcp85_2006_2099"]
-
 	# Process each model and run
 	for model_and_run in model_and_run_list:
-		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_%s_CONUS_monthly_aggregated.nc" % (model_and_run, time_list[1])
+		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_historical_1950_2005_CONUS_monthly_aggregated.nc" % model_and_run
 		#print model_and_run, data_path
 		model_name = model_and_run.split("_")[0]
 		#print model_name
@@ -166,11 +164,10 @@ def get_scatterplot_data(request):
     #Dictionary of JSON rows
 	JSON_dictionary = {}
 
-	#print netcdf_data_list
 	# Loop through each column and set the colunm name for JSON and assign data
 	#print len(netcdf_data_list[0])
 	for i in range(len(netcdf_data_list[0])):
-		#print netcdf_data_list[0][i][1], type(netcdf_data_list[0][i][1])
+		#print netcdf_data_list[0][i][0], type(netcdf_data_list[0][i][0])
 		JSON_dictionary[netcdf_data_list[0][i][0]] = netcdf_data_list[0][i][1]
 	
 	object_for_JSON = {"data":[JSON_dictionary,]}
@@ -208,7 +205,6 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 
 	# NetCDF variable 
 	datahandle=filehandle.variables[variable]
-	#print datahandle
 	time_num=len(timehandle)
 	timeindex=range(time_num)  #python starts arrays at 0
 	time=timehandle[timeindex]
@@ -286,7 +282,6 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 		dataset = []
 		for i in range(len(dates)):
 			dataset.append([dates[i], data_spatial_analysis[i]])
-		#print dataset
 		return dataset
 
 	# Get and sort monthly dates and data
