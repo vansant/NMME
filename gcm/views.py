@@ -130,6 +130,19 @@ def get_scatterplot_data(request):
 	else:
 		errors.append("You need to specify a variable parameter")
 
+	# sw lon
+	if 'time-frame' in request.GET:
+		try:
+			time_frame = request.GET['time-frame']
+			if time_frame == "historical" or time_frame == "rcp45" or time_frame == "rcp85":
+				pass
+			else:
+				errors.append("time-frame parameter needs to be historical rcp45 or rcp85")
+		except:
+			errors.append("time-frame parameter needs to be historical rcp45 or rcp85")
+	else:
+		errors.append("You need to specify a time-frame parameter")
+
 	# Return errors
 	if errors:
 		return HttpResponse(errors)
@@ -143,13 +156,23 @@ def get_scatterplot_data(request):
 	# List for all returned netcdf data
 	netcdf_data_list = []
 
+	#product = "Maca"
+
+
 	# List of GCM models and runs
 	model_and_run_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
 	time_list = ["historical_1950_2005", "rcp45_2006_2099", "rcp85_2006_2099"]
-	
+
+	if time_frame == "historical":
+		time_range = time_list[0]
+	if time_frame == "rcp45":
+		time_range = time_list[1]
+	if time_frame == "rcp85":
+		time_range = time_list[2]
+
 	# Process each model and run
 	for model_and_run in model_and_run_list:
-		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_%s_CONUS_monthly_aggregated.nc" % (model_and_run, time_list[1])
+		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_pr_%s_%s_CONUS_monthly_aggregated.nc" % (model_and_run, time_range)
 		#print model_and_run, data_path
 		model_name = model_and_run.split("_")[0]
 		#print model_name
