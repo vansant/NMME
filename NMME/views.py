@@ -126,7 +126,7 @@ def get_netcdf_data(request):
         if positive_east_longitude == "True" or positive_east_longitude == "False":
             pass
         else:
-            errors.append("positive-east-longitude paramxieater should be either True or False")
+            errors.append("positive-east-longitude parameter should be either True or False")
     
     # Variable
     if 'variable' in request.GET:
@@ -161,7 +161,7 @@ def get_netcdf_data(request):
 
         for url in data_path_list:
             if str(url).isdigit():
-                errors.append("data-path paramaters must be a a url not a number")
+                errors.append("data-path parameters must be a a url not a number")
             else:
                 str(url)
     else:

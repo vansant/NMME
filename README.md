@@ -61,4 +61,30 @@ filter-month
     0 = Jan
     2 = Mar
     11 = Dec
+
+
+#Required URL parameters for /get-gcm-scatterplot-data
+sw-lat
+  ex. 45
+sw-lon
+  ex. -115
+ne-lat
+  ex. 47
+ne-lon
+  ex. -116
+start-year
+  ex. 2006
+end-year
+  ex. 2099
+start-month
+  ex. 11
+end-month
+  ex. 2
+calculation
+  ex. sum
+variable
+  ex. precipitation
+time-frame
+  ex. rcp85
+get-gcm-scatterplot-data/?sw-lat=45&sw-lon=-115&ne-lat=47&ne-lon=-116&start-year=2006&end-year=2099&start-month=11&end-month=2&calculation=sum&variable=precipitation&time-frame=rcp85
 </pre>
