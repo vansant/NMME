@@ -239,7 +239,6 @@ def get_netcdf_data(request):
         #print netcdf_start_time_index
         #print netcdf_end_time_index
 
-
         # Set as false until request is made later for just the dates
         request_dates = "False"
 

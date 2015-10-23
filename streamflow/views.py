@@ -7,6 +7,7 @@ from multiprocessing import Pool
 
 #import numpy as np
 from django.http import HttpResponse
+import models
 
 #import inputs ...where can I put other files in Django? 
 
@@ -89,7 +90,7 @@ def streamflow(request):
         # Set request lat lon variable
         request_lat_lon = False
 
-        # List to hold  function parameters as tuples
+        # List to hold function parameters as tuples
         # Each set of parameters is for one URL call
         function_parameters = []
 
@@ -99,19 +100,68 @@ def streamflow(request):
         # Get the dates data
         request_dates = "True"
 
-        #streamflow_time_list, netcdf_time_index = models.get_netcdf_data(lat, lon, positive_east_longitude, variable_list[0], request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[0], request_lat_lon=False, start_date=start_date, end_date=end_date, start_date_index='', end_date_index='' )
+        #scenario='historical'
+        scenario='historicalstream'
+        #scenario='rcp45'
+        model=''
+        netcdf_time_list, netcdf_time_index=models.get_streamflow_data(outlet, variable, product,year_start, year_end,scenario,model,request_dates,['',''])
 
         #print netcdf_time_list
-        #if sreamflow_time_list[0] == 'error':
-        #    return HttpResponse("There was an error: " + netcdf_time_list[1] )
+        if netcdf_time_list[0] == 'error':
+            return HttpResponse("There was an error: " + netcdf_time_list[1] )
 
-        #streamflow_start_date_index = streamflow_time_index[0]
-        #streamflow_end_date_index = streamflow_time_index[1]
+        netcdf_start_date_index = netcdf_time_index[0]
+        netcdf_end_date_index = netcdf_time_index[1]
+
+        # Set as false until request is made later for just the dates
+        request_dates = "False"
 
         # List to hold Metadata items
         metadata_list = []
         metadata_column_list = []
 
+        model_list=['bcc-csm1-1','NorESM1-M']
+        #model_list=['bcc-csm1-1','NorESM1-M','MIROC5','IPSL-CM5A-MR','HadGEM2-ES365','HadGEM2-CC365','CanESM2','CSIRO-Mk3-6-0','CNRM-CM5','CCSM4']
+	print len(model_list)
         # Process each model from the model list
+        for i in range(len(model_list)):
+            print model_list[i]
+            #function_parameters.append((lat,lon,positive_east_longitude,variable_list[i],request_dates, start_year, start_month, start_day, time_metric,time_units, data_path_list[i], request_lat_lon, start_date, end_date, netcdf_start_date_index, netcdf_end_date_index))
+
+            # m returns variable long name, variable units
+            m = models.get_streamflow_data(outlet, variable, product,year_start, year_end,scenario,model_list[i],request_dates,netcdf_time_index)
+
+            # Contains long names of variables
+            metadata_list.append(m[0])
+
+            # Contains user defined variable names and units from metadata
+            metadata_column_list.append(variable_name_list[i] + ' (' + m[1] + ')')
+
+
+        # Map to pool - this gets netcdf data into a workable list
+        netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
+
+        # Close subprocess workers (open files)
+        #p.terminate()
+        #p.join()
+        #print netcdf_time_list.index("1960-01-01")
+
+        # Converts from U'' to ''
+        metadata_column_list = [str(x) for x in metadata_column_list]
+        metadata_list = [str(x) for x in metadata_list]
+
+        # Convert metadata colum list to string and clean it up
+        metadata_columns_string = str(metadata_column_list)
+        metadata_columns_string = clean_list_string(metadata_columns_string)
+
+        #metadata_column_list = [str(x) for x in metadata_column_list]
+
+        # URL data was requested with
+        request_path = request.META['HTTP_HOST'] + request.get_full_path()
+
+        # List containing the clean string names of the NetCDF filenames
+        netcdf_filenames_list = [str(x.split('/')[-1]) for x in data_path_list]
+        netcdf_filenames_list = [clean_list_string(x.split('/')[-1]) for x in netcdf_filenames_list] 
+
 
         return HttpResponse("outlet="+outlet+"<br> variable="+variable+"<br>year_start="+str(year_start)+"<br>year_end="+str(year_end)+"<br>product="+product)
