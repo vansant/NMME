@@ -46,21 +46,21 @@ request-JSON
   Returns the data as a JSON object
   Default = False
 start-date
-    yyyy-mm-dd
-    Must also declare with end-date
-    Used to filter data by date range
-    1950-01-01
+  yyyy-mm-dd
+  Must also declare with end-date
+  Used to filter data by date range
+  1950-01-01
 end-date
-    yyyy-mm-dd
-    Must also declare with start-date
-    Used to filter data by date range
-    1955-01-01
+  yyyy-mm-dd
+  Must also declare with start-date
+  Used to filter data by date range
+  1955-01-01
 filter-month
-    Must be an integer 0-11
-    Used to filter data by month
-    0 = Jan
-    2 = Mar
-    11 = Dec
+  Must be an integer 0-11
+  Used to filter data by month
+  0 = Jan
+  2 = Mar
+  11 = Dec
 
 
 #Required URL parameters for /get-gcm-scatterplot-data
@@ -87,4 +87,26 @@ variable
 time-frame
   ex. rcp85
 get-gcm-scatterplot-data/?sw-lat=45&sw-lon=-115&ne-lat=47&ne-lon=-116&start-year=2006&end-year=2099&start-month=11&end-month=2&calculation=sum&variable=precipitation&time-frame=rcp85
+
+
+#Required URL parameters for /get-streamflow-data
+outlet
+  ex. EASW 
+variable
+  ex. streamflow
+product
+  ex. ULM
+scenario
+  ex. rcp85
+model
+  ex. CCSM4
+
+get-streamflow-data/?outlet=EASW&variable=streamflow&product=ULM&scenario=rcp85&model=CCSM4
+
+#Optional URL parameters for /get-streamflow-data
+start-date
+  1900-01-01
+end-date
+  2000-01-01
+
 </pre>
