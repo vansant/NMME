@@ -30,14 +30,15 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     elif scenario =='rcp85':
         pathname ='http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_HYDROLOGY_VIC2/vic_RoutedRunoff_'+model+'_'+runname+'_rcp85_2006_2099_WUSA_daily.nc'
 
-    print pathname
+    #print pathname
     filehandle=Dataset(pathname,'r',format="NETCDF4")
     #print filehandle.variables
 
     try:
         outlethandle = filehandle.variables['outlet_name']
     except:
-        print "there is no outlets variable"
+        pass
+        #print "there is no outlets variable"
     try:
         timehandle=filehandle.variables['time']
     except:
@@ -78,7 +79,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     timeindex = slice(0, len(time_array))
 
     if start_date and end_date:
-        print start_date, end_date
+        #print start_date, end_date
         timeindex = slice(date_list.index(start_date), date_list.index(end_date))
         date_list =  date_list[timeindex]
         #print date_list
@@ -90,7 +91,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     # Create pangdas time series 
     time_series = pd.Series(data, index=pandas_date_range)
     time_series_data = time_series.resample('M')
-    print time_series_data
+    #print time_series_data
 
     # Filter monthly data
     month = time_series_data.index.month
