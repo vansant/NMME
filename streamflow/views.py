@@ -82,9 +82,13 @@ def streamflow(request):
     month_name_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     netcdf_data_list = {}
 
+
     # Loop through each column and set the colunm name for JSON and assign data
     for i in range(len(month_name_list)):
-        JSON_dictionary[month_name_list[i]] = float(data[i])
+        return_data = []
+        for x in range(len(data)):
+            return_data.append(float(data[x][i]))
+        JSON_dictionary[month_name_list[i]] = return_data
     
     object_for_JSON = {"data":[JSON_dictionary,]}
     response = json.dumps(object_for_JSON)
