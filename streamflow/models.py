@@ -57,7 +57,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     # Get a List of dates from the start date
     date_list = []
     for time in time_array:
-        t = find_start_date_from_days_since(int(time), 1900, 1, 1)
+        t = find_start_date_from_days_since(int(time), 1950, 1, 1)
         date_list.append(t)
 
     # Convert datetime.date(1950, 1, 1) to 1950-01-01
@@ -76,6 +76,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     #print outlet_dictionary
 
     closestOutlet = outlet_dictionary[outlet]
+    #print closestOutlet
     timeindex = slice(0, len(time_array))
 
     if start_date and end_date:
@@ -84,6 +85,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
         date_list =  date_list[timeindex]
         #print date_list
     data = datahandle[timeindex,closestOutlet]
+    #print data
 
     # Convert list of dates to pandas date_range 
     pandas_date_range = pd.DatetimeIndex(date_list)
