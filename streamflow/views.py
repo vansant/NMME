@@ -43,14 +43,17 @@ def streamflow(request):
     else:
         errors.append("You need to specify a scenario parameter")
 
-    # Model
-    if 'model' in request.GET:
-        try:
-            model = request.GET['model']
-        except:
-            errors.append("model parameter needs to be a string")
-    else:
-        errors.append("You need to specify a model parameter")
+    if scenario == "historicalstream":
+        model = "None"
+    else:    
+        # Model
+        if 'model' in request.GET:
+            try:
+                model = request.GET['model']
+            except:
+                errors.append("model parameter needs to be a string")
+        else:
+            errors.append("You need to specify a model parameter")
 
     # Start Date
     start_date = ''
