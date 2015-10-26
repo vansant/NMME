@@ -5,6 +5,8 @@ import datetime as dt
 from dateutil import rrule 
 import pandas as pd
 
+from NMME.local_settings import streamflow_path
+
 def find_start_date_from_days_since(days_since, start_year, start_month, start_day):
     """ Returns the start date from number of days since a start year, month, day"""
     days_since = timedelta(days=days_since)
@@ -22,13 +24,13 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
         
     # Get data path
     if scenario == 'historicalstream':
-        pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_HYDROLOGY_VIC2/vic_RoutedRunoff_livneh-CANv1.1-USv1.0_None_historical_1950_2005_WUSA_daily.nc'
+        pathname = streamflow_path + 'livneh-CANv1.1-USv1.0_None_historical_1950_2005_WUSA_daily.nc'
     elif scenario == 'historical':
-        pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_HYDROLOGY_VIC2/vic_RoutedRunoff_'+model+'_'+runname+'_historical_1950_2005_WUSA_daily.nc'   
+        pathname = streamflow_path+model+'_'+runname+'_historical_1950_2005_WUSA_daily.nc'   
     elif scenario == 'rcp45':
-        pathname = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_HYDROLOGY_VIC2/vic_RoutedRunoff_'+model+'_'+runname+'_rcp45_2006_2099_WUSA_daily.nc'
+        pathname = streamflow_path+model+'_'+runname+'_rcp45_2006_2099_WUSA_daily.nc'
     elif scenario =='rcp85':
-        pathname ='http://thredds.northwestknowledge.net:8080/thredds/dodsC/NWCSC_INTEGRATED_SCENARIOS_ALL_HYDROLOGY_VIC2/vic_RoutedRunoff_'+model+'_'+runname+'_rcp85_2006_2099_WUSA_daily.nc'
+        pathname =streamflow_path+model+'_'+runname+'_rcp85_2006_2099_WUSA_daily.nc'
 
     #print pathname
     filehandle=Dataset(pathname,'r',format="NETCDF4")
