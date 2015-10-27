@@ -261,7 +261,7 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_yea
 
 
 	closestLat = slice(sw_lat, ne_lat)
-	closestLon = slice(ne_lon, sw_lon)
+	closestLon = slice(sw_lon, ne_lon)
 
 	# Which months to get data for
 	#month_list = [11,0,1]
