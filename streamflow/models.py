@@ -73,7 +73,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
         outlet_data = outlet_array[i]
         outlet_data_list = outlet_data.tolist()
         outlet_name = ''.join(outlet_data_list)
-        print outlet_name, len(outlet_name), type(outlet_name)
+        #print outlet_name, len(outlet_name), type(outlet_name)
         #for name in outlet_data_list:
         #    outlet_name += name
         outlet_dictionary[outlet_name] = i
