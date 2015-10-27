@@ -12,7 +12,7 @@ def get_scatterplot_data(request):
 	# start_month
 	if 'start-month' in request.GET:
 		try:
-			start_month = int(request.GET['start-month'])
+			start_month = int(request.GET['start-month'])-1
 			if start_month < 0 or start_month > 11 :
 				errors.append("start-month parameter needs to to be between 0-11. 0 is Jan where 1 is Dec")
 		except:
@@ -23,7 +23,7 @@ def get_scatterplot_data(request):
 	# end_month
 	if 'end-month' in request.GET:
 		try:
-			end_month = int(request.GET['end-month'])
+			end_month = int(request.GET['end-month'])-1
 			if end_month < 0 or end_month > 11 :
 				errors.append("end-month parameter needs to to be between 0-11. 0 is Jan where 1 is Dec")
 		except:

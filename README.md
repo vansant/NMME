@@ -77,9 +77,9 @@ start-year
 end-year
   ex. 2099
 start-month
-  ex. 11
+  ex. 12 for December
 end-month
-  ex. 2
+  ex. 3 Up to but not including March
 calculation
   ex. sum
 variable
