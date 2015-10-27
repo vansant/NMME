@@ -171,15 +171,17 @@ def get_scatterplot_data(request):
 	if time_frame == "rcp85":
 		time_range = time_list[2]
 
-	variable_dictionary = {'specific_humidity':'huss', 'precipitation':'pr', 'air_temperature':'tasmax', 'surface_downwelling_shortwave_flux_in_air':'rsds', 'air_temperature':'tasmin', }
+	variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', }
 
 	# Process each model and run
 	for model_and_run in model_and_run_list:
-		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_%s_%s_%s_CONUS_monthly_aggregated.nc" % (variable_dictionary[variable], model_and_run, time_range)
+		data_path="http://thredds.northwestknowledge.net:8080/thredds/dodsC/macav2livneh_%s_%s_%s_CONUS_monthly_aggregated.nc" % (variable, model_and_run, time_range)
 		#print model_and_run, data_path
 		model_name = model_and_run.split("_")[0]
 		#print model_name
-		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation, model_name))
+		variable_transform = variable_dictionary[variable]
+		#print variable
+		function_parameters.append((sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable_transform, data_path, calculation, model_name))
 
 	# Map to pool - this gets netcdf data into a workable list
 	netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
