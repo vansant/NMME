@@ -142,11 +142,5 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     dec_data = time_series_data[dec_selector]
 
     monthly_data = [jan_data, feb_data, mar_data, apr_data, may_data, jun_data, jul_data, aug_data, sep_data, oct_data, nov_data, dec_data]
-    if scenario == 'historicalstream':
-        monthly_calculation =  [np.mean(x) for x in monthly_data]
-        return [monthly_calculation]
-    else:
-        monthly_min = [np.min(x) for x in monthly_data]
-        monthly_max = [np.max(x) for x in monthly_data]
-        return [monthly_min, monthly_max]
-    
+    monthly_calculation =  [np.mean(x) for x in monthly_data]
+    return [monthly_calculation]    
