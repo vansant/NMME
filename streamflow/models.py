@@ -71,12 +71,14 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     for i in range(len(outlet_array)):
         outlet_name = ""
         outlet_data = outlet_array[i]
-        outlet_name = "".join(outlet_array[i])
+        for name in outlet_data:
+            outlet_name += name
         outlet_dictionary[outlet_name] = i
         i+=1
     #print outlet_dictionary
 
     closestOutlet = outlet_dictionary[outlet]
+    #print closestOutlet
     timeindex = slice(0, len(time_array))
 
     if start_date and end_date:
@@ -140,6 +142,5 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     else:
         monthly_min = [np.min(x) for x in monthly_data]
         monthly_max = [np.max(x) for x in monthly_data]
-        monthly_mean = [np.mean(x) for x in monthly_data]
-        return [monthly_min, monthly_max, monthly_mean]
+        return [monthly_min, monthly_max]
     
