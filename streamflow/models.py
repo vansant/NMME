@@ -81,7 +81,7 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
         #    outlet_name += name
         outlet_dictionary[outlet_name] = i
         i+=1
-    print outlet_dictionary
+    #print outlet_dictionary
 
     closestOutlet = outlet_dictionary[outlet]
     #print closestOutlet
