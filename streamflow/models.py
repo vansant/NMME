@@ -71,15 +71,12 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     for i in range(len(outlet_array)):
         outlet_name = ""
         outlet_data = outlet_array[i]
-        for name in outlet_data:
-            #print type(outlet_name), type(str(name))
-            outlet_name += str(name)
+        outlet_name = "".join(outlet_array[i])
         outlet_dictionary[outlet_name] = i
         i+=1
     #print outlet_dictionary
 
     closestOutlet = outlet_dictionary[outlet]
-    #print closestOutlet
     timeindex = slice(0, len(time_array))
 
     if start_date and end_date:
