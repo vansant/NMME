@@ -83,7 +83,7 @@ end-month
 calculation
   ex. sum
 variable
-  ex. precipitation
+  ex. pr
 time-frame
   ex. rcp85
 get-gcm-scatterplot-data/?sw-lat=45&sw-lon=-115&ne-lat=47&ne-lon=-116&start-year=2006&end-year=2099&start-month=11&end-month=2&calculation=sum&variable=precipitation&time-frame=rcp85

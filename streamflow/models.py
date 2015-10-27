@@ -142,5 +142,6 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     else:
         monthly_min = [np.min(x) for x in monthly_data]
         monthly_max = [np.max(x) for x in monthly_data]
-        return [monthly_min, monthly_max]
+        monthly_mean = [np.mean(x) for x in monthly_data]
+        return [monthly_min, monthly_max, monthly_mean]
     
