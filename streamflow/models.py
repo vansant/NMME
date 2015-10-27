@@ -69,16 +69,19 @@ def get_streamflow_data(outlet, variable, product, scenario, model, start_date, 
     # Outlet dictionary for index lookup
     outlet_dictionary = {}
     for i in range(len(outlet_array)):
-        outlet_name = ""
         outlet_data = outlet_array[i]
         outlet_data_list = outlet_data.tolist()
-        outlet_name = ''.join(outlet_data_list)
+        outlet_name = ''
+        for x in outlet_data_list:
+            if x:
+                outlet_name += x
+        #outlet_name = ''.join(outlet_data_list)
         #print outlet_name, len(outlet_name), type(outlet_name)
         #for name in outlet_data_list:
         #    outlet_name += name
         outlet_dictionary[outlet_name] = i
         i+=1
-    #print outlet_dictionary
+    print outlet_dictionary
 
     closestOutlet = outlet_dictionary[outlet]
     #print closestOutlet
