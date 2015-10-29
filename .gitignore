@@ -60,3 +60,6 @@ local_settings.py
 production_settings.py
 *.sqlite3
 *.swp
+
+# Ignore test datasets directory
+datasets/

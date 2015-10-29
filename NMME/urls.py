@@ -9,5 +9,6 @@ urlpatterns = patterns('',
         url(r'^chart-netcdf-data/', 'NMME.views.chart_netcdf_data', name='chart_netcdf_data'),
         url(r'^get-streamflow-data/', 'streamflow.views.streamflow', name='get_streamflow_data'),
         url(r'^get-gcm-scatterplot-data/', 'gcm.views.get_scatterplot_data', name='get_scatterplot_data'),
+        url(r'^get-local-gcm-scatterplot-data/', 'gcm.views2.get_scatterplot_data', name='get_scatterplot_data'),
 )
 
