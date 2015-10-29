@@ -30,7 +30,7 @@ def build_netcdf_data_paths(product, variable, model, time_frame, daily_or_month
     # Get list of NetCDF Files
     for file_name in os.listdir("."):
         if file_name.endswith(".nc"):
-            print 'true'
+            #print 'true'
             if file_name.split("_")[1] == variable:
                 # Filter time frame
                 if time_frame in file_name and daily_or_monthly in file_name:
