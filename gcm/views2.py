@@ -35,6 +35,7 @@ def build_netcdf_data_paths(product, variable, model, time_frame, daily_or_month
                 # Filter time frame
                 if time_frame in file_name and daily_or_monthly in file_name:
                     data_path_strings.append(file_name)
+                    #print file_name
                 else:
                     pass
             else:
@@ -223,7 +224,10 @@ def get_scatterplot_data(request):
     variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN'}
     variable_transform = variable_dictionary[variable]
 
-    netcdf_data_paths = build_netcdf_data_paths(product=product, variable=variable, model="BNU-ESM", time_frame=time_frame, daily_or_monthly="monthly")
+    # for models in model_list
+    model_name = 'CCSM4'
+
+    netcdf_data_paths = build_netcdf_data_paths(product=product, variable=variable, model=model_name, time_frame=time_frame, daily_or_monthly="monthly")
     filtered_path_names = filter_netcdf_paths_by_date_range(start_date=str(start_year), end_date=str(end_year), netcdf_data_paths=netcdf_data_paths)
 
     # for each path_name
@@ -232,8 +236,7 @@ def get_scatterplot_data(request):
     # spatially average data
     # combine all months for each model
 
-    # for models in model_list
-    model_name = 'BNU-ESM'
+
 
     # Process each model and get results
     processed_data_list = []
