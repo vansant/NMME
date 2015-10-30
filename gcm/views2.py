@@ -225,38 +225,57 @@ def get_scatterplot_data(request):
     variable_transform = variable_dictionary[variable]
 
     # for models in model_list
-    model_name = 'CCSM4'
+    #model_name = 'CCSM4'
+    #model_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
+    model_list = ['CCSM4','BNU-ESM']
 
-    netcdf_data_paths = build_netcdf_data_paths(product=product, variable=variable, model=model_name, time_frame=time_frame, daily_or_monthly="monthly")
-    filtered_path_names = filter_netcdf_paths_by_date_range(start_date=str(start_year), end_date=str(end_year), netcdf_data_paths=netcdf_data_paths)
+    for model in model_list:
+        #print model
+        function_parameters.append((product, variable, model, time_frame, "monthly", start_year, end_year, sw_lat, sw_lon, ne_lon, ne_lat, month_list, end_month, start_month, variable_transform, calculation ))
 
-    # for each path_name
-    # get get dates
-    # get data
-    # spatially average data
-    # combine all months for each model
-
-
-
-    # Process each model and get results
-    processed_data_list = []
-    for data_path in filtered_path_names:
-        proccessed_data = process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable_transform, data_path, calculation, model_name)
-        processed_data_list.append(proccessed_data)
-    
-    #print processed_data_list 
-    monthly_dates_and_data =  reduce(lambda x,y: x+y,processed_data_list)
-    
-    # Model and averaged data
-    all_data = process_combined_years_and_data(monthly_dates_and_data=monthly_dates_and_data, month_list=month_list, calculation=calculation, start_year=start_year, end_year=end_year, start_month=month_list[0]+1, end_month=month_list[-1]+1, model_name=model_name)
+    # # Map to pool - this gets netcdf data into a workable list
+    netcdf_data_list.append (p.map(allow_mulitple_parameters, function_parameters))
 
     # Close subprocess workers (open files)
     p.terminate()
     p.join()
 
-    #response = [model_results_list]
+    #Dictionary of JSON rows
+    JSON_dictionary = {}
 
-    return HttpResponse(all_data)
+    # Loop through each column and set the colunm name for JSON and assign data
+    #print len(netcdf_data_list[0])
+    for i in range(len(netcdf_data_list[0])):
+        #print netcdf_data_list[0][i][0], type(netcdf_data_list[0][i][0])
+        JSON_dictionary[netcdf_data_list[0][i][0]] = netcdf_data_list[0][i][1]
+    
+    object_for_JSON = {"data":[JSON_dictionary,]}
+    response = json.dumps(object_for_JSON)
+    
+    return HttpResponse(response, content_type="application/json")
+
+def multiprocess_models(product, variable, model, time_frame, daily_or_monthly, start_year, end_year, sw_lat, sw_lon, ne_lon, ne_lat, month_list, end_month, start_month, variable_transform,  calculation):
+    #print product
+    netcdf_data_paths = build_netcdf_data_paths(product=product, variable=variable, model=model, time_frame=time_frame, daily_or_monthly="monthly")
+    #print netcdf_data_paths
+    filtered_path_names = filter_netcdf_paths_by_date_range(start_date=str(start_year), end_date=str(end_year), netcdf_data_paths=netcdf_data_paths)
+
+    # Process each model and get results
+    processed_data_list = []
+    for data_path in filtered_path_names:
+        proccessed_data = process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable_transform, data_path, calculation, model)
+        processed_data_list.append(proccessed_data)
+
+    #print processed_data_list 
+    monthly_dates_and_data =  reduce(lambda x,y: x+y,processed_data_list)
+    
+    # Model and averaged data
+    all_data = process_combined_years_and_data(monthly_dates_and_data=monthly_dates_and_data, month_list=month_list, calculation=calculation, start_year=start_year, end_year=end_year, start_month=month_list[0]+1, end_month=month_list[-1]+1, model_name=model)
+    return all_data
+
+# Pack parameters
+def allow_mulitple_parameters(args):
+    return multiprocess_models(*args)
 
 def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_list, start_year, end_year, end_month, start_month, variable, data_path, calculation, model_name):
 
