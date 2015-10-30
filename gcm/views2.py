@@ -227,7 +227,7 @@ def get_scatterplot_data(request):
     # for models in model_list
     #model_name = 'CCSM4'
     #model_list = ['IPSL-CM5A-LR_r1i1p1', 'HadGEM2-CC365_r1i1p1', 'inmcm4_r1i1p1', 'MIROC-ESM_r1i1p1', 'CNRM-CM5_r1i1p1', 'MIROC5_r1i1p1', 'CanESM2_r1i1p1', 'MIROC-ESM-CHEM_r1i1p1', 'BNU-ESM_r1i1p1', 'IPSL-CM5B-LR_r1i1p1', 'HadGEM2-ES365_r1i1p1', 'GFDL-ESM2G_r1i1p1', 'bcc-csm1-1-m_r1i1p1', 'MRI-CGCM3_r1i1p1', 'GFDL-ESM2M_r1i1p1', 'CSIRO-Mk3-6-0_r1i1p1', 'NorESM1-M_r1i1p1', 'bcc-csm1-1_r1i1p1', 'IPSL-CM5A-MR_r1i1p1', 'CCSM4_r6i1p1']
-    model_list = ['CCSM4','BNU-ESM']
+    model_list = ['IPSL-CM5A-LR', 'HadGEM2-CC365', 'inmcm4', 'MIROC-ESM', 'CNRM-CM5', 'MIROC5', 'CanESM2', 'MIROC-ESM-CHEM', 'BNU-ESM', 'IPSL-CM5B-LR', 'HadGEM2-ES365', 'GFDL-ESM2G', 'bcc-csm1-1-m', 'MRI-CGCM3', 'GFDL-ESM2M', 'CSIRO-Mk3-6-0', 'NorESM1-M', 'bcc-csm1-1', 'IPSL-CM5A-MR', 'CCSM4']
 
     for model in model_list:
         #print model
