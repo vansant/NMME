@@ -68,6 +68,12 @@ def get_scatterplot_data(request):
     """ View that calculate the temporal average from a NETCDF4 file for a spatial region"""
     errors = []
 
+    # Initialize with fake parameters
+    start_month=1
+    end_month=2
+    start_year=3
+    end_year=4
+
     # start_month
     if 'start-month' in request.GET:
         try:
