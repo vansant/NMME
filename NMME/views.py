@@ -53,6 +53,7 @@ def clean_list_string(input_string):
     i = input_string.replace("'", '')
     i = i.replace('[', '')
     i = i.replace(']', '')
+    i = i.replace(' ', '')
     return i
 
 # Pack parameters
@@ -266,6 +267,7 @@ def get_netcdf_data(request):
         # Map to pool - this gets netcdf data into a workable list
         netcdf_data_list.append ( p.map(allow_mulitple_parameters, function_parameters) )
 
+        #print netcdf_data_list
         # Close subprocess workers (open files)
         p.terminate()
         p.join()
@@ -283,7 +285,6 @@ def get_netcdf_data(request):
         # Convert metadata colum list to string and clean it up
         metadata_columns_string = str(metadata_column_list)
         metadata_columns_string = clean_list_string(metadata_columns_string)
-
         #metadata_column_list = [str(x) for x in metadata_column_list]
 
         # URL data was requested with
@@ -300,6 +301,7 @@ def get_netcdf_data(request):
         column_format_csv = [['yyyy-mm-dd']]
 
         for i in metadata_columns_string_split:
+            #print i
             
             column_format_csv[0].append(i)
 
@@ -378,7 +380,9 @@ def get_netcdf_data(request):
             # Loop through each column and set the colunm name for JSON and assign data
             for i in range(len(column_names)):
                 column_data = [row[i] for row in response_rows]
+                #print column_names[i]
                 JSON_dictionary[column_names[i].split(" ")[0]] = column_data
+                #print JSON_dictionary[column_names[i].split(" ")[0]]
                 object_for_JSON = {"data":
                         [
                             JSON_dictionary,
@@ -389,6 +393,7 @@ def get_netcdf_data(request):
         # Get JSON Data
         if request_JSON == "True":
             # Convert the data to dictionary to get converted into JSON
+            #print column_format_csv[0]
             object_for_JSON = rows_to_JSON(column_format_csv[0], response_rows)
             #print JSON_dictionary
             response = json.dumps(object_for_JSON)
