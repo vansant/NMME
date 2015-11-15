@@ -201,7 +201,7 @@ def get_scatterplot_data(request):
     else:
         errors.append("You need to specify a product parameter")
 
-    # sw lon
+    # time frame
     if 'time-frame' in request.GET:
         try:
             time_frame = request.GET['time-frame']
