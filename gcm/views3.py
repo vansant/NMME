@@ -6,9 +6,7 @@ from models import  spatial_subset, index_from_numpy_array
 import json
 import os
 
-#from NMME.local_settings import scatterplot_summary_path
-
-scatterplot_summary_path = "/Users/vansant/Projects/NMME/datasets/summarylayers"
+from NMME.local_settings import scatterplot_summary_path
 
 product = "macav2metdata"
 variable_list = ['pr']#, 'tasmin', 'pet', 'rhsmin', 'rsds', 'rhsmax', 'tasmax', 'was']
