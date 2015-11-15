@@ -10,5 +10,6 @@ urlpatterns = patterns('',
         url(r'^get-streamflow-data/', 'streamflow.views.streamflow', name='get_streamflow_data'),
         url(r'^get-gcm-scatterplot-data/', 'gcm.views.get_scatterplot_data', name='get_scatterplot_data'),
         url(r'^get-local-gcm-scatterplot-data/', 'gcm.views2.get_scatterplot_data', name='get_scatterplot_data'),
+        url(r'^get-summary-gcm-scatterplot-data/', 'gcm.views3.get_scatterplot_data', name='get_scatterplot_data'),
 )
 
