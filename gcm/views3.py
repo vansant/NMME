@@ -9,7 +9,7 @@ import os
 from NMME.local_settings import scatterplot_summary_path
 
 product = "macav2metdata"
-variable_list = ['pr']#, 'tasmin', 'pet', 'rhsmin', 'rsds', 'rhsmax', 'tasmax', 'was']
+#variable_list = ['pr']#, 'tasmin', 'pet', 'rhsmin', 'rsds', 'rhsmax', 'tasmax', 'was']
 month_ranges = ['ANN', 'DJF', 'MAM', 'JJA', 'SON']
 year_ranges = ['20102039', '20702099', '19712000', '20402069']
 scenarios = ['rcp45', 'historical', 'rcp85']
@@ -37,7 +37,7 @@ def get_scatterplot_data(request):
 
     #model_name = "20CMIP5ModelMean"
 
-    variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN', 'pet':'pet'}
+    variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN', 'pet':'pet', 'rhsmin':' relative_humidity', 'rhsmax':' relative_humidity'}
     variable_transform = variable_dictionary[variable]
     print variable_transform
 
