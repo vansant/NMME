@@ -139,23 +139,3 @@ def process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_range, variable, data_pat
     # Average or sum over spatial subset region
     data_spatial_analysis = summary_layer_spatial_subset(data, method="mean")
     return [model_name, data_spatial_analysis]
-
-
-# sw_lat = 45
-# sw_lon = -116
-# ne_lon = -115
-# ne_lat = 46
-# month_range = "ANN"
-# variable = "pr"
-# year_range  = '20102039'
-# scenario = 'rcp45'
-# model_name = "20CMIP5ModelMean"
-
-# file_name = 'macav2metdata_%s_%s_%s_%s_%s.nc' % (variable, month_range, year_range, scenario, model_name)
-# data_path = os.path.join(scatterplot_summary_path, file_name)
-
-# variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN'}
-# variable = variable_dictionary[variable]
-
-# results = process_data(sw_lat, sw_lon, ne_lon, ne_lat, month_range, variable, data_path, model_name)
-# print results
