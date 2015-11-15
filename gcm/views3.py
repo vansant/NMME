@@ -21,7 +21,7 @@ def get_scatterplot_data(request):
     ne_lon = -115
     ne_lat = 46
     month_range = "DJF"
-    variable = "pr"
+    variable = "pet"
     year_range  = '20102039'
     scenario = 'rcp45'
     positive_east_longitude = "False"
@@ -37,7 +37,7 @@ def get_scatterplot_data(request):
 
     #model_name = "20CMIP5ModelMean"
 
-    variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN'}
+    variable_dictionary = {'huss':'specific_humidity', 'pr':'precipitation', 'tasmax':'air_temperature', 'rsds':'surface_downwelling_shortwave_flux_in_air', 'tasmin':'air_temperature', 'was':'wind_speed', 'SWE-monday1':'SWE','Evaporation-monsum':'Evaporation','TotalSoilMoist-monmean':'TotalSoilMoisture', 'C_ECOSYS':'C_ECOSYS',  'PART_BURN':'PART_BURN', 'pet':'pet'}
     variable_transform = variable_dictionary[variable]
     print variable_transform
 
