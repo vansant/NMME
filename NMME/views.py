@@ -374,7 +374,7 @@ def get_netcdf_data(request):
             """ Process rows into dictionary objects (columns) to convert to JSON"""
 
             #Dictionary of JSON rows
-            JSON_dictionary = {"metadata": metadata_rows
+            JSON_dictionary = {"metadata": metadata_rows, 'lat_lon': actual_lat_lon
             }
 
             # Loop through each column and set the colunm name for JSON and assign data
