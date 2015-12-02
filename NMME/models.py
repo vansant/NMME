@@ -98,10 +98,37 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
     lon_array = lonhandle[:]
     time_array = timehandle[:]
 
+
+
     #print lon_array
 
-    #
+    # Try to pull days since date from netcdf files
+    try:
 
+        # Try to get variable for days since
+        try:
+            days_since =  filehandle.variables['time']
+        except:
+            days_since =  filehandle.variables['Time']
+
+        # Try to get units variable
+        try:
+            days_since_value = days_since.units
+        except:
+            days_since_value = days_since.origin
+
+
+
+        # split to get 1900-01-01 format for year, month, day
+        days_since_value_split = days_since_value.split('-')
+
+        days_since_year = int(days_since_value_split[0][-4:])
+        days_since_month = int(days_since_value_split[1])
+        days_since_day = int(days_since_value_split[2][0:4])
+    except:
+        days_since_year = 1900
+        days_since_month = 1
+        days_since_day = 1
 
 
     # Return only the dates for the dataset
@@ -115,7 +142,7 @@ def get_netcdf_data(lat, lon, positive_east_longitude, variable, request_dates, 
         # Get a List of dates from the start date
         date_list = []
         for time in time_array:
-            t = find_start_date_from_days_since(int(time), 1900, 1, 1)
+            t = find_start_date_from_days_since(int(time), days_since_year, days_since_month, days_since_day)
             date_list.append(t)
 
         # Convert datetime.date(1950, 1, 1) to 1950-01-01
